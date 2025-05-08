@@ -5,12 +5,16 @@ import Home from './pages/Home'
 
 export default function App() {
   return (
-    <>
+    // full-view height, column flex so footer stays at bottom
+    <div className="d-flex flex-column min-vh-100">
       <Navbar />
-      <main className="min-h-[80vh]">
+
+      {/* flex-grow keeps footer pushed to bottom */}
+      <main className="flex-grow-1">
         <Home />
       </main>
+
       <Footer />
-    </>
+    </div>
   )
 }
