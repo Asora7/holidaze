@@ -9,11 +9,15 @@ async function handleResponse(res: Response) {
   return res.json();
 }
 
-/**
- * Fetches all venues (first page).
- */
 export async function fetchAllVenues(): Promise<any[]> {
-  const res = await fetch(`${BASE_URL}/venues`);
+  const res  = await fetch(`${BASE_URL}/venues`);
+  const json = await handleResponse(res) as { data: any[] };
+  return json.data;
+}
+
+/** new! call the search endpoint */
+export async function searchVenues(q: string): Promise<any[]> {
+  const res  = await fetch(`${BASE_URL}/venues/search?q=${encodeURIComponent(q)}`);
   const json = await handleResponse(res) as { data: any[] };
   return json.data;
 }
