@@ -15,9 +15,15 @@ export async function fetchAllVenues(): Promise<any[]> {
   return json.data;
 }
 
-/** new! call the search endpoint */
 export async function searchVenues(q: string): Promise<any[]> {
   const res  = await fetch(`${BASE_URL}/venues/search?q=${encodeURIComponent(q)}`);
   const json = await handleResponse(res) as { data: any[] };
+  return json.data;
+}
+
+// ← Add this function:
+export async function fetchVenueById(id: string): Promise<any> {
+  const res  = await fetch(`${BASE_URL}/venues/${id}`);
+  const json = await handleResponse(res) as { data: any };
   return json.data;
 }

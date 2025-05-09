@@ -1,5 +1,6 @@
 // src/components/VenueCard.tsx
 import React from "react";
+import { Link } from "react-router-dom";
 
 export interface Venue {
   id: string;
@@ -14,12 +15,14 @@ interface VenueCardProps {
 }
 
 const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
-  // pick the first image or fall back to a placeholder
   const imageUrl = venue.media[0]?.url ?? "/placeholder.jpg";
   const imageAlt = venue.media[0]?.alt ?? venue.name;
 
   return (
-    <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <Link
+      to={`/venues/${venue.id}`}
+      className="block border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+    >
       <img
         src={imageUrl}
         alt={imageAlt}
@@ -34,7 +37,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
         )}
         <p className="mt-2 font-bold">${venue.price}/night</p>
       </div>
-    </div>
+    </Link>
   );
 };
 
