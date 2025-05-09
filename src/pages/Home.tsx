@@ -2,19 +2,20 @@
 import { useState, useEffect, useMemo } from "react";
 import Hero from "../components/Hero";
 import SearchBar from "../components/SearchBar";
-import CategorySelector from "../components/CategorySelector";
+import LocationSelector from "../components/LocationSelector"; // <- new
 import FilterDropdown, { FILTER_OPTIONS } from "../components/FilterDropdown";
 import VenueGrid from "../components/VenueGrid";
 import { fetchAllVenues, searchVenues } from "../api/venuesApi";
 
+const DESTINATIONS = ["Oslo", "Amsterdam", "Thailand", "Spain"];
+
 export default function Home() {
   const [venues, setVenues]       = useState<any[]>([]);
   const [loading, setLoading]     = useState(true);
-  const [category, setCategory]   = useState("all");
+  const [location, setLocation]   = useState("all");
   const [filter, setFilter]       = useState(FILTER_OPTIONS[0]);
   const [query, setQuery]         = useState("");
 
-  // initial load
   useEffect(() => {
     setLoading(true);
     fetchAllVenues()
@@ -22,7 +23,6 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  // search handler (unchanged)
   function handleSearch({ where }: { where: string }) {
     setQuery(where);
     setLoading(true);
@@ -32,7 +32,7 @@ export default function Home() {
       .finally(() => setLoading(false));
   }
 
-  // 1) sort according to filter
+  // sort
   const sorted = useMemo(() => {
     const arr = [...venues];
     switch (filter) {
@@ -40,17 +40,22 @@ export default function Home() {
         return arr.sort((a, b) => a.price - b.price);
       case "price: high → low":
         return arr.sort((a, b) => b.price - a.price);
-      case "popular destinations":
-      default:
-        // assume venues have a .rating number
+      default: // popular
         return arr.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
   }, [venues, filter]);
 
-  // 2) then filter by category
-  const displayed = sorted.filter(v =>
-    category === "all" ? true : v.meta?.type === category
-  );
+  // filter by location pills
+  const displayed = sorted.filter((v) => {
+    if (location === "all") return true;
+    // match either city or country
+    const city    = v.location?.city || "";
+    const country = v.location?.country || "";
+    return (
+      city.toLowerCase() === location.toLowerCase() ||
+      country.toLowerCase() === location.toLowerCase()
+    );
+  });
 
   return (
     <div>
@@ -58,18 +63,25 @@ export default function Home() {
       <SearchBar onSearch={handleSearch} />
 
       {query && (
-        <p className="text-center my-2 text-sm text-gray-600">
-          Showing {displayed.length} result{displayed.length!==1 && "s"} for “{query}”
+        <p className="text-center text-sm text-gray-600 my-2">
+          Showing {displayed.length} result{displayed.length !== 1 && "s"} for “{query}”
         </p>
       )}
 
-      <CategorySelector value={category} onChange={setCategory} />
+      {/* new location selector */}
+      <LocationSelector
+        options={["all", ...DESTINATIONS]}
+        value={location}
+        onChange={setLocation}
+      />
+
       <FilterDropdown value={filter} onChange={setFilter} />
 
-      {loading
-        ? <p className="text-center my-8">Loading venues…</p>
-        : <VenueGrid venues={displayed} />
-      }
+      {loading ? (
+        <p className="text-center my-8">Loading venues…</p>
+      ) : (
+        <VenueGrid venues={displayed} />
+      )}
     </div>
   );
 }
