@@ -1,9 +1,9 @@
 // src/pages/Home.tsx
 import { useState, useEffect, useMemo } from "react";
-import Hero from "../components/Hero";
-import SearchBar from "../components/SearchBar";
-import LocationSelector from "../components/LocationSelector"; // <- new
-import FilterDropdown, { FILTER_OPTIONS } from "../components/FilterDropdown";
+import Hero from "../components/Home/Hero";
+import SearchBar from "../components/Home/SearchBar";
+import LocationSelector from "../components/Home/LocationSelector"; // <- new
+import FilterDropdown, { FILTER_OPTIONS } from "../components/Home/FilterDropdown";
 import VenueGrid from "../components/VenueGrid";
 import { fetchAllVenues, searchVenues } from "../api/venuesApi";
 
