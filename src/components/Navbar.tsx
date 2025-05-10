@@ -1,6 +1,7 @@
 // src/components/Navbar.tsx
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { useAuth } from '../auth/AuthContext'
 import Logo from '../assets/images/holidaze-logo.svg'
 
 const NavLink = styled(Link)`
@@ -17,18 +18,41 @@ const NavLink = styled(Link)`
 `
 
 export default function Navbar() {
+  const navigate = useNavigate()
+  const { user, isAuthenticated, logout } = useAuth()
+
+  function handleLogout() {
+    logout()       // clear token & user
+    navigate('/')  // redirect to homepage
+  }
+
   return (
     <nav className="navbar navbar-expand-lg bg-white border-bottom">
       <div className="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
-        {/* Just the logo as brand */}
+        {/* logo */}
         <Link to="/" className="navbar-brand p-0">
           <img src={Logo} alt="Holidaze logo" height={96} />
         </Link>
 
-        {/* Nav links spaced out */}
-        <div className="d-flex gap-5 me-4">
-          <NavLink to="/login">Log in</NavLink>
-          <NavLink to="/register">Register</NavLink>
+        <div className="d-flex gap-4 align-items-center">
+          {isAuthenticated ? (
+            <>
+              <NavLink to={user!.venueManager ? "/account/manager" : "/account/customer"}>
+                My Account
+              </NavLink>
+              <button
+                onClick={handleLogout}
+                className="btn btn-outline-secondary"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink to="/login">Log in</NavLink>
+              <NavLink to="/register">Register</NavLink>
+            </>
+          )}
         </div>
       </div>
     </nav>
