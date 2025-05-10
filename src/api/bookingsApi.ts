@@ -1,31 +1,56 @@
-// src/api/bookingApi.ts
-const API_BASE = import.meta.env.VITE_API_BASE_URL
+const API_BASE = import.meta.env.VITE_API_BASE_URL as string;  // e.g. https://v2.api.noroff.dev
+const H_API    = `${API_BASE}/holidaze`;                       // …/holidaze
 
-// GET /api/venues/:id/availability
-export async function getAvailability(venueId: string): Promise<string[]> {
-  const resp = await fetch(`${API_BASE}/api/venues/${venueId}/availability`)
-  if (!resp.ok) throw new Error('Could not load availability')
-  return resp.json()
+async function handleJson<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error((body as any).message || res.statusText);
+  }
+  return res.json();
 }
 
-// POST /api/bookings
-export async function createBooking(payload: {
+/**
+ * GET /holidaze/venues/:id?_bookings=true
+ */
+export async function getVenueWithBookings(
   venueId: string
-  date: string    // 'YYYY-MM-DD'
+): Promise<{
+  id: string;
+  bookings: Array<{ dateFrom: string; dateTo: string }>;
+}> {
+  const res  = await fetch(`${H_API}/venues/${venueId}?_bookings=true`);
+  const json = await handleJson<{ data: any }>(res);
+  return {
+    id: json.data.id,
+    bookings: json.data.bookings.map((b: any) => ({
+      dateFrom: b.dateFrom,
+      dateTo:   b.dateTo,
+    })),
+  };
+}
+
+/**
+ * POST /holidaze/bookings
+ */
+export async function createBooking(payload: {
+  venueId: string;
+  date: string; // 'YYYY-MM-DD'
 }): Promise<void> {
-  const resp = await fetch(`${API_BASE}/api/bookings`, {
-    method: 'POST',
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${H_API}/bookings`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      // add auth header here later if you need one
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(payload),
-  })
-  if (resp.status === 401) {
-    throw new Error('You must be logged in to book')
+  });
+
+  if (res.status === 401) {
+    throw new Error("You must be logged in to book");
   }
-  if (!resp.ok) {
-    const err = await resp.json()
-    throw new Error(err.message || 'Booking failed')
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any).message || "Booking failed");
   }
 }
