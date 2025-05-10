@@ -64,7 +64,12 @@ const Register: React.FC = () => {
       localStorage.setItem("token", data.accessToken);
   
       // 3) Redirect to your protected area (e.g. dashboard or account)
-      navigate("/login");  // or "/dashboard" per your routing
+      navigate("/login", {
+        state: {
+          justRegistered: true,
+          isManager: form.venueManager
+        }
+      });
   
     } catch (err: any) {
       // handle API errors as before
