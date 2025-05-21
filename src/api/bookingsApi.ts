@@ -80,3 +80,26 @@ export async function createBooking(payload: {
     return json.data;
   }
   
+  /**
+ * DELETE /holidaze/bookings/:bookingId
+ */
+export async function cancelBooking(bookingId: string): Promise<void> {
+    const API_BASE = import.meta.env.VITE_API_BASE_URL as string
+    const H_API    = `${API_BASE}/holidaze`
+    const token    = localStorage.getItem("token") ?? ""
+    const apiKey   = import.meta.env.VITE_API_KEY ?? ""
+    
+    const res = await fetch(`${H_API}/bookings/${bookingId}`, {
+      method: "DELETE",
+      headers: {
+        "X-Noroff-API-Key": apiKey,
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    })
+  
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error((err as any).message || "Failed to cancel booking")
+    }
+  }
+  
