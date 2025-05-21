@@ -1,88 +1,99 @@
 // src/pages/Login.tsx
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { loginUser } from "../api/auth";
-import { useAuth } from "../auth/AuthContext";
-import { toast } from "react-toastify";
+import React, { useState, useEffect } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
+import { loginUser } from "../api/auth"
+import { useAuth } from "../auth/AuthContext"
+import { toast } from "react-toastify"
 
 interface FieldErrors {
-  email?: string;
-  password?: string;
-  general?: string;
+  email?: string
+  password?: string
+  general?: string
+}
+
+interface LocationState {
+  justRegistered?: boolean
+  isManager?: boolean
+  errorMessage?: string
+  from?: string
 }
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { state } = useLocation() as {
-    state?: { justRegistered?: boolean; isManager?: boolean };
-  };
-  const { login } = useAuth();
+  const navigate = useNavigate()
+  const { state } = useLocation() as { state?: LocationState }
+  const { login } = useAuth()
+
+  // show the “you must be logged in” error once
+  const [initialError] = useState(state?.errorMessage)
 
   const [venueManager, setVenueManager] = useState(
     state?.isManager ?? false
-  );
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState<FieldErrors>({});
+  )
+  const [form, setForm] = useState({ email: "", password: "" })
+  const [errors, setErrors] = useState<FieldErrors>({})
 
   useEffect(() => {
     if (state?.justRegistered) {
-      toast.success("Registration successful, please log in");
+      toast.success("Registration successful, please log in")
     }
-  }, [state]);
+  }, [state])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  };
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    // 1) Quick client-side sanity checks
-    const errs: FieldErrors = {};
+    // client-side validation
+    const errs: FieldErrors = {}
     if (!form.email.trim()) {
-      errs.email = "Email is required";
+      errs.email = "Email is required"
     } else if (!form.email.includes("@stud.noroff.no")) {
-      errs.email = "Must be a stud.noroff.no address";
+      errs.email = "Must be a stud.noroff.no address"
     }
     if (!form.password) {
-      errs.password = "Password is required";
+      errs.password = "Password is required"
     }
     if (Object.keys(errs).length) {
-      setErrors(errs);
-      return;
+      setErrors(errs)
+      return
     }
 
-    // 2) Call the API
+    // call API
     try {
       const { data } = await loginUser({
         email: form.email,
         password: form.password,
-      });
-
-      // 3) Success! persist and redirect
+      })
       login({
         token: data.accessToken,
         name: data.name,
         email: data.email,
         venueManager: data.venueManager,
-      });
-      navigate(
-        data.venueManager
-          ? "/account/manager"
-          : "/account/customer"
-      );
-    } catch (err: any) {
-      // 4) Always generic
-      setErrors({ general: "Email or password is incorrect" });
+      })
+
+      // send back where they came from, or default dashboard
+      const dest =
+        state?.from ??
+        (data.venueManager ? "/account/manager" : "/account/customer")
+      navigate(dest)
+    } catch {
+      setErrors({ general: "Email or password is incorrect" })
     }
-  };
+  }
 
   return (
     <div className="container my-5">
       <div className="mx-auto" style={{ maxWidth: 480 }}>
         <h2 className="mb-4 text-center">Log in</h2>
 
-        {/* account type toggle */}
+        {initialError && (
+          <div className="alert alert-danger text-center">
+            {initialError}
+          </div>
+        )}
+
         <div className="btn-group mb-3 w-100">
           <button
             type="button"
@@ -119,7 +130,9 @@ export default function Login() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className={`form-control ${errors.email ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.email ? "is-invalid" : ""
+              }`}
             />
             {errors.email && (
               <div className="invalid-feedback">{errors.email}</div>
@@ -151,5 +164,5 @@ export default function Login() {
         </form>
       </div>
     </div>
-  );
+  )
 }

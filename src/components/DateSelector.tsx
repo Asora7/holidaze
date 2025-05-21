@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import ReactDatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { getVenueWithBookings, createBooking } from '../api/bookingsApi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { addDays, parseISO } from 'date-fns'
 import { Modal, Button } from 'react-bootstrap'
@@ -21,7 +21,8 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
   const [showConfirm, setShowConfirm] = useState(false)
 
   const navigate = useNavigate()
-  const { isAuthenticated, redirectToLogin } = useAuth()
+  const location = useLocation()
+  const { isAuthenticated } = useAuth()
 
   // Fetch unavailable dates
   useEffect(() => {
@@ -41,12 +42,20 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
       .catch(console.error)
   }, [venueId])
 
-  // Show the confirmation modal
+  // Show the confirmation modal (or redirect to login)
   const attemptBooking = () => {
     if (!startDate || !endDate) return
+
     if (!isAuthenticated) {
-      return redirectToLogin(`/venues/${venueId}`)
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+          errorMessage: 'You must be logged in to book a venue',
+        },
+      })
+      return
     }
+
     setShowConfirm(true)
   }
 
@@ -60,10 +69,8 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
         dateTo:   endDate!.toISOString().split('T')[0],
         guests:   1,
       })
-      // no toast—just navigate immediately
       navigate('/account/customer')
     } catch (err: any) {
-      // you can still alert on error, or show an inline error banner if you prefer
       alert(`Booking failed: ${err.message}`)
     }
   }
@@ -95,7 +102,6 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
         </Button>
       </div>
 
-      {/* Confirmation Modal only */}
       <Modal show={showConfirm} onHide={() => setShowConfirm(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Your Booking</Modal.Title>
