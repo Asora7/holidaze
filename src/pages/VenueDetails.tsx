@@ -42,7 +42,7 @@ export default function VenueDetails() {
       </ul>
 
       {/* ← here is the calendar & button */}
-      <DateSelector venueId={id!} />
+      <DateSelector venueId={id!} price={venue.price} />
     </div>
   )
 }
