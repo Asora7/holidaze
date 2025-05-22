@@ -1,6 +1,6 @@
 // src/components/Home/FilterDropdown.tsx
 
-import { Container, Form } from 'react-bootstrap';
+import { Container, Row, Col, Form } from 'react-bootstrap';
 
 export const FILTER_OPTIONS = [
   'popular destinations',
@@ -8,16 +8,32 @@ export const FILTER_OPTIONS = [
   'price: high → low'
 ];
 
-export default function FilterDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+interface FilterDropdownProps {
+  value: string;
+  onChange: (v: string) => void;
+}
+
+export default function FilterDropdown({
+  value,
+  onChange
+}: FilterDropdownProps) {
   return (
-    <Container className="mb-4 d-flex justify-content-center">
-      <Form.Select
-        style={{ maxWidth: '200px' }}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-      >
-        {FILTER_OPTIONS.map(o => <option key={o}>{o}</option>)}
-      </Form.Select>
+    <Container className="mb-4">
+      <Row>
+        <Col xs="auto" className="ps-0">
+          <Form.Select
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            style={{ maxWidth: '200px' }}
+          >
+            {FILTER_OPTIONS.map(option => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+      </Row>
     </Container>
   );
 }

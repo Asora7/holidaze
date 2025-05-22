@@ -76,6 +76,11 @@ export default function Home() {
         </Container>
       )}
 
+      {/* New section title */}
+      <Container className="mt-5 mb-3">
+        <h2 className="h5 fw-semibold">Where do you want to go?</h2>
+      </Container>
+
       <LocationSelector
         options={['all', ...DESTINATIONS]}
         value={location}
@@ -94,3 +99,4 @@ export default function Home() {
     </>
   );
 }
+

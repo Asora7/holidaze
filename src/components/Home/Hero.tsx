@@ -1,6 +1,7 @@
 // src/components/Home/Hero.tsx
 
 import { Container } from 'react-bootstrap';
+import heroImg from '../../assets/images/hero.jpg';
 
 export default function Hero() {
   return (
@@ -10,7 +11,7 @@ export default function Hero() {
         height: '600px',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundImage: `url(/assets/hero.jpg)`
+        backgroundImage: `url(${heroImg})`
       }}
     >
       <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50" />
