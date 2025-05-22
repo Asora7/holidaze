@@ -1,20 +1,36 @@
 // src/components/Navbar.tsx
+
 import { Link, useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { useAuth } from '../auth/AuthContext'
 import Logo from '../assets/images/holidaze-logo.svg'
 
-const NavLink = styled(Link)`
+// shared link/button styles
+const navItemStyles = css`
   color: var(--bs-primary);
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 18px;
   letter-spacing: 0.5px;
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 
   &:hover {
     color: #1e473f;
   }
+`
+
+// a styled Link
+const NavLink = styled(Link)`
+  ${navItemStyles}
+`
+
+// a styled button with the exact same look
+const NavButton = styled.button`
+  ${navItemStyles}
 `
 
 export default function Navbar() {
@@ -22,8 +38,8 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth()
 
   function handleLogout() {
-    logout()       // clear token & user
-    navigate('/')  // redirect to homepage
+    logout()
+    navigate('/')
   }
 
   return (
@@ -34,18 +50,16 @@ export default function Navbar() {
           <img src={Logo} alt="Holidaze logo" height={96} />
         </Link>
 
-        <div className="d-flex gap-4 align-items-center">
+        {/* wider gap between items */}
+        <div className="d-flex gap-5 align-items-center">
           {isAuthenticated ? (
             <>
               <NavLink to={user!.venueManager ? "/account/manager" : "/account/customer"}>
                 My Account
               </NavLink>
-              <button
-                onClick={handleLogout}
-                className="btn btn-outline-secondary"
-              >
+              <NavButton onClick={handleLogout}>
                 Log out
-              </button>
+              </NavButton>
             </>
           ) : (
             <>
