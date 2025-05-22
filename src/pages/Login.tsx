@@ -1,87 +1,81 @@
 // src/pages/Login.tsx
-import React, { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import { loginUser } from "../api/auth"
-import { useAuth } from "../auth/AuthContext"
-import { toast } from "react-toastify"
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { loginUser } from "../api/auth";
+import { useAuth } from "../auth/AuthContext";
+import { toast } from "react-toastify";
 
 interface FieldErrors {
-  email?: string
-  password?: string
-  general?: string
+  email?: string;
+  password?: string;
+  general?: string;
 }
 
 interface LocationState {
-  justRegistered?: boolean
-  isManager?: boolean
-  errorMessage?: string
-  from?: string
+  justRegistered?: boolean;
+  errorMessage?: string;
+  from?: string;
 }
 
 export default function Login() {
-  const navigate = useNavigate()
-  const { state } = useLocation() as { state?: LocationState }
-  const { login } = useAuth()
+  const navigate = useNavigate();
+  const { state } = useLocation() as { state?: LocationState };
+  const { login } = useAuth();
 
-  // show the “you must be logged in” error once
-  const [initialError] = useState(state?.errorMessage)
-
-  const [venueManager, setVenueManager] = useState(
-    state?.isManager ?? false
-  )
-  const [form, setForm] = useState({ email: "", password: "" })
-  const [errors, setErrors] = useState<FieldErrors>({})
-
+  // Show any “must be logged in” error or “just registered” toast
+  const [initialError] = useState(state?.errorMessage);
   useEffect(() => {
     if (state?.justRegistered) {
-      toast.success("Registration successful, please log in")
+      toast.success("Registration successful, please log in");
     }
-  }, [state])
+  }, [state]);
+
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }))
-  }
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // client-side validation
-    const errs: FieldErrors = {}
-    if (!form.email.trim()) {
-      errs.email = "Email is required"
-    } else if (!form.email.includes("@stud.noroff.no")) {
-      errs.email = "Must be a stud.noroff.no address"
-    }
-    if (!form.password) {
-      errs.password = "Password is required"
-    }
+    const errs: FieldErrors = {};
+    if (!form.email.trim()) errs.email = "Email is required";
+    else if (!form.email.includes("@stud.noroff.no"))
+      errs.email = "Must be a stud.noroff.no address";
+
+    if (!form.password) errs.password = "Password is required";
+
     if (Object.keys(errs).length) {
-      setErrors(errs)
-      return
+      setErrors(errs);
+      return;
     }
 
-    // call API
     try {
       const { data } = await loginUser({
         email: form.email,
         password: form.password,
-      })
+      });
+
+      // 1) Save token & user info (including venueManager flag)
       login({
         token: data.accessToken,
         name: data.name,
         email: data.email,
         venueManager: data.venueManager,
-      })
+      });
 
-      // send back where they came from, or default dashboard
-      const dest =
-        state?.from ??
-        (data.venueManager ? "/account/manager" : "/account/customer")
-      navigate(dest)
+      // 2) Redirect based on server-claimed role
+      const dest = data.venueManager
+        ? "/account/manager"
+        : "/account/customer";
+      navigate(state?.from ?? dest);
     } catch {
-      setErrors({ general: "Email or password is incorrect" })
+      setErrors({ general: "Email or password is incorrect" });
     }
-  }
+  };
 
   return (
     <div className="container my-5">
@@ -93,27 +87,6 @@ export default function Login() {
             {initialError}
           </div>
         )}
-
-        <div className="btn-group mb-3 w-100">
-          <button
-            type="button"
-            className={`btn ${
-              !venueManager ? "btn-warning" : "btn-outline-secondary"
-            }`}
-            onClick={() => setVenueManager(false)}
-          >
-            Customer
-          </button>
-          <button
-            type="button"
-            className={`btn ${
-              venueManager ? "btn-warning" : "btn-outline-secondary"
-            }`}
-            onClick={() => setVenueManager(true)}
-          >
-            Venue Manager
-          </button>
-        </div>
 
         <form onSubmit={handleSubmit} noValidate>
           {errors.general && (
@@ -164,5 +137,5 @@ export default function Login() {
         </form>
       </div>
     </div>
-  )
+  );
 }

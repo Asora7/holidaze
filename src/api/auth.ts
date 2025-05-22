@@ -49,15 +49,18 @@ export interface RegisterPayload {
   export async function loginUser(
     payload: LoginPayload
   ): Promise<UserResponse> {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    // ← note the `?_holidaze=true` here
+    const res = await fetch(
+      `${API_BASE}/auth/login?_holidaze=true`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error((err as any).message || res.statusText);
     }
     return res.json();
   }
-  
