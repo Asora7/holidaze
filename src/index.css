@@ -15,3 +15,19 @@ body {
   font-family: var(--font-sans);
   margin: 0;
 }
+
+/* Hero-specific serif style */
+.hero-heading {
+  font-family: var(--font-serif);
+}
+
+
+/* src/index.css (or App.css) */
+.hero-full {
+  position: relative;
+  width: 100vw;                     /* full viewport width */
+  left: 50%;                        /* shift right by half its width */
+  right: 50%;
+  margin-left: -50vw;               /* bring it back to the left edge */
+  margin-right: -50vw;
+}
