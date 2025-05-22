@@ -1,5 +1,6 @@
 //components/VenueForm.tsx
-import { useState, FormEvent } from "react";
+
+import React, { useState } from "react";
 import { createVenue } from "../api/venuesApi";
 
 interface Props {
@@ -19,7 +20,9 @@ export default function VenueForm({ onCreated, onCancel }: Props) {
   const [breakfast, setBreakfast]     = useState(false);
   const [pets, setPets]               = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     try {
       await createVenue({
@@ -96,10 +99,38 @@ export default function VenueForm({ onCreated, onCancel }: Props) {
       </label>
 
       <fieldset className="flex flex-wrap gap-4">
-        <label><input type="checkbox" checked={wifi}       onChange={_=>setWifi(!wifi)} /> Free wifi</label>
-        <label><input type="checkbox" checked={parking}   onChange={_=>setParking(!parking)} /> Free parking</label>
-        <label><input type="checkbox" checked={breakfast} onChange={_=>setBreakfast(!breakfast)} /> Breakfast</label>
-        <label><input type="checkbox" checked={pets}      onChange={_=>setPets(!pets)} /> Pets allowed</label>
+        <label>
+          <input
+            type="checkbox"
+            checked={wifi}
+            onChange={() => setWifi(!wifi)}
+          />{" "}
+          Free wifi
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={parking}
+            onChange={() => setParking(!parking)}
+          />{" "}
+          Free parking
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={breakfast}
+            onChange={() => setBreakfast(!breakfast)}
+          />{" "}
+          Breakfast
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={pets}
+            onChange={() => setPets(!pets)}
+          />{" "}
+          Pets allowed
+        </label>
       </fieldset>
 
       <label className="block">
