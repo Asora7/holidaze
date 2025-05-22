@@ -1,6 +1,7 @@
-// src/components/SearchBar.tsx
-import React, { useState } from "react";
-import type { FormEvent } from "react";
+// src/components/Home/SearchBar.tsx
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { Form, Button, Row, Col, Container } from 'react-bootstrap';
 
 interface SearchBarProps {
   onSearch?: (params: {
@@ -10,10 +11,10 @@ interface SearchBarProps {
   }) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [where, setWhere]     = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate]     = useState("");
+export default function SearchBar({ onSearch }: SearchBarProps) {
+  const [where, setWhere]       = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate]     = useState('');
   const [guests, setGuests]     = useState(1);
 
   const handleSubmit = (e: FormEvent) => {
@@ -22,44 +23,46 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-4xl mx-auto flex flex-wrap items-center gap-2 bg-white border rounded-full shadow px-4 py-2 mt-6"
-    >
-      <input
-        type="text"
-        placeholder="Where to?"
-        value={where}
-        onChange={(e) => setWhere(e.target.value)}
-        className="flex-1 min-w-[120px] outline-none"
-      />
-      <input
-        type="date"
-        value={fromDate}
-        onChange={(e) => setFromDate(e.target.value)}
-        className="flex-1 min-w-[120px] outline-none"
-      />
-      <input
-        type="date"
-        value={toDate}
-        onChange={(e) => setToDate(e.target.value)}
-        className="flex-1 min-w-[120px] outline-none"
-      />
-      <input
-        type="number"
-        min={1}
-        value={guests}
-        onChange={(e) => setGuests(Number(e.target.value))}
-        className="flex-1 min-w-[80px] outline-none"
-      />
-      <button
-        type="submit"
-        className="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-2 rounded-full whitespace-nowrap"
-      >
-        Search
-      </button>
-    </form>
+    <Container className="mt-4">
+      <Form onSubmit={handleSubmit}>
+        <Row className="g-2 align-items-center">
+          <Col md>
+            <Form.Control
+              placeholder="Where to?"
+              value={where}
+              onChange={e => setWhere(e.target.value)}
+            />
+          </Col>
+          <Col md>
+            <Form.Control
+              type="date"
+              value={fromDate}
+              onChange={e => setFromDate(e.target.value)}
+            />
+          </Col>
+          <Col md>
+            <Form.Control
+              type="date"
+              value={toDate}
+              onChange={e => setToDate(e.target.value)}
+            />
+          </Col>
+          <Col md="auto">
+            <Form.Control
+              type="number"
+              min={1}
+              value={guests}
+              onChange={e => setGuests(+e.target.value)}
+              style={{ width: '80px' }}
+            />
+          </Col>
+          <Col md="auto">
+            <Button type="submit" variant="warning" className="px-4">
+              Search
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+    </Container>
   );
-};
-
-export default SearchBar;
+}

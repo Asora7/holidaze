@@ -1,36 +1,32 @@
-// src/components/LocationSelector.tsx
+// src/components/Home/LocationSelector.tsx
+import { Button, ButtonGroup, Container, Card } from 'react-bootstrap';
 
-interface LocationSelectorProps {
+interface Props {
   options: string[];
   value: string;
   onChange: (loc: string) => void;
 }
 
-export default function LocationSelector({
-  options,
-  value,
-  onChange
-}: LocationSelectorProps) {
+export default function LocationSelector({ options, value, onChange }: Props) {
   return (
-    <div className="flex gap-6 justify-center my-8">
-      {options.map((loc) => (
-        <button
-          key={loc}
-          onClick={() => onChange(loc)}
-          className={`rounded-2xl overflow-hidden shadow-lg transform hover:scale-105 transition p-0 ${
-            value === loc ? "ring-4 ring-yellow-400" : ""
-          }`}
-        >
-          <img
-            src={`/assets/locations/${loc.toLowerCase()}.jpg`}
-            alt={loc}
-            className="w-48 h-64 object-cover rounded-t-2xl"
-          />
-          <div className="bg-white text-center py-2 font-medium">
-            {loc}
-          </div>
-        </button>
-      ))}
-    </div>
+    <Container className="my-5 d-flex justify-content-center">
+      <ButtonGroup>
+        {options.map(loc => (
+          <Button
+            key={loc}
+            variant={value === loc ? 'warning' : 'light'}
+            onClick={() => onChange(loc)}
+            className="d-flex flex-column align-items-center px-0 border-0"
+          >
+            <Card.Img
+              src={`/assets/locations/${loc.toLowerCase()}.jpg`}
+              alt={loc}
+              style={{ width: '120px', height: '160px', objectFit: 'cover', borderRadius: '0.5rem' }}
+            />
+            <small className="mt-2">{loc}</small>
+          </Button>
+        ))}
+      </ButtonGroup>
+    </Container>
   );
 }

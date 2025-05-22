@@ -1,20 +1,21 @@
 // src/pages/Home.tsx
-import { useState, useEffect, useMemo } from "react";
-import Hero from "../components/Home/Hero";
-import SearchBar from "../components/Home/SearchBar";
-import LocationSelector from "../components/Home/LocationSelector"; // <- new
-import FilterDropdown, { FILTER_OPTIONS } from "../components/Home/FilterDropdown";
-import VenueGrid from "../components/VenueGrid";
-import { fetchAllVenues, searchVenues } from "../api/venuesApi";
+import { useState, useEffect, useMemo } from 'react';
+import { Container } from 'react-bootstrap';
+import Hero from '../components/Home/Hero';
+import SearchBar from '../components/Home/SearchBar';
+import LocationSelector from '../components/Home/LocationSelector';
+import FilterDropdown, { FILTER_OPTIONS } from '../components/Home/FilterDropdown';
+import VenueGrid from '../components/VenueGrid';
+import { fetchAllVenues } from '../api/venuesApi';
 
-const DESTINATIONS = ["Oslo", "Amsterdam", "Thailand", "Spain"];
+const DESTINATIONS = ['Oslo', 'Amsterdam', 'Thailand', 'Spain'];
 
 export default function Home() {
-  const [venues, setVenues]       = useState<any[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [location, setLocation]   = useState("all");
-  const [filter, setFilter]       = useState(FILTER_OPTIONS[0]);
-  const [query, setQuery]         = useState("");
+  const [venues, setVenues]     = useState<any[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [location, setLocation] = useState('all');
+  const [filter, setFilter]     = useState(FILTER_OPTIONS[0]);
+  const [query, setQuery]       = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -24,33 +25,39 @@ export default function Home() {
   }, []);
 
   function handleSearch({ where }: { where: string }) {
+    const q = where.trim().toLowerCase();
     setQuery(where);
     setLoading(true);
-    const call = where.trim() ? searchVenues(where) : fetchAllVenues();
-    call
-      .then(setVenues)
+
+    fetchAllVenues()
+      .then(all => {
+        const filtered = all.filter(v => {
+          const nameMatch = v.name?.toLowerCase().includes(q);
+          const descMatch = v.description?.toLowerCase().includes(q);
+          const cityMatch = v.location?.city?.toLowerCase().includes(q);
+          return nameMatch || descMatch || cityMatch;
+        });
+        setVenues(filtered);
+      })
       .finally(() => setLoading(false));
   }
 
-  // sort
   const sorted = useMemo(() => {
     const arr = [...venues];
     switch (filter) {
-      case "price: low → high":
+      case 'price: low → high':
         return arr.sort((a, b) => a.price - b.price);
-      case "price: high → low":
+      case 'price: high → low':
         return arr.sort((a, b) => b.price - a.price);
-      default: // popular
+      default:
         return arr.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
   }, [venues, filter]);
 
-  // filter by location pills
-  const displayed = sorted.filter((v) => {
-    if (location === "all") return true;
-    // match either city or country
-    const city    = v.location?.city || "";
-    const country = v.location?.country || "";
+  const displayed = sorted.filter(v => {
+    if (location === 'all') return true;
+    const city    = v.location?.city || '';
+    const country = v.location?.country || '';
     return (
       city.toLowerCase() === location.toLowerCase() ||
       country.toLowerCase() === location.toLowerCase()
@@ -58,19 +65,19 @@ export default function Home() {
   });
 
   return (
-    <div>
+    <>
       <Hero />
+
       <SearchBar onSearch={handleSearch} />
 
       {query && (
-        <p className="text-center text-sm text-gray-600 my-2">
-          Showing {displayed.length} result{displayed.length !== 1 && "s"} for “{query}”
-        </p>
+        <Container className="text-center text-muted my-3">
+          Showing {displayed.length} result{displayed.length !== 1 && 's'} for “{query}”
+        </Container>
       )}
 
-      {/* new location selector */}
       <LocationSelector
-        options={["all", ...DESTINATIONS]}
+        options={['all', ...DESTINATIONS]}
         value={location}
         onChange={setLocation}
       />
@@ -78,10 +85,12 @@ export default function Home() {
       <FilterDropdown value={filter} onChange={setFilter} />
 
       {loading ? (
-        <p className="text-center my-8">Loading venues…</p>
+        <Container className="text-center my-5">
+          <p>Loading venues…</p>
+        </Container>
       ) : (
         <VenueGrid venues={displayed} />
       )}
-    </div>
+    </>
   );
 }

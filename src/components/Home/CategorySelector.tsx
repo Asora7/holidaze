@@ -1,3 +1,4 @@
+//components/Home/CategorySelector.tsx
 const options = ["cabin", "apartment", "villa", "hotel"];
 
 export default function CategorySelector({

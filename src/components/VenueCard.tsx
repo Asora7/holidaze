@@ -1,6 +1,6 @@
 // src/components/VenueCard.tsx
-import React from "react";
-import { Link } from "react-router-dom";
+import { Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 export interface Venue {
   id: string;
@@ -14,31 +14,29 @@ interface VenueCardProps {
   venue: Venue;
 }
 
-const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
-  const imageUrl = venue.media[0]?.url ?? "/placeholder.jpg";
-  const imageAlt = venue.media[0]?.alt ?? venue.name;
+export default function VenueCard({ venue }: VenueCardProps) {
+  const img = venue.media[0]?.url || '/placeholder.jpg';
+  const alt = venue.media[0]?.alt || venue.name;
 
   return (
-    <Link
-      to={`/venues/${venue.id}`}
-      className="block border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-    >
-      <img
-        src={imageUrl}
-        alt={imageAlt}
-        className="w-full h-48 object-cover"
-      />
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">{venue.name}</h3>
+    <Card className="h-100 shadow-sm border-0">
+      <Link to={`/venues/${venue.id}`}>
+        <Card.Img
+          variant="top"
+          src={img}
+          alt={alt}
+          style={{ height: '200px', objectFit: 'cover' }}
+        />
+      </Link>
+      <Card.Body>
+        <Card.Title>{venue.name}</Card.Title>
         {venue.location && (
-          <p className="text-sm text-gray-600">
+          <Card.Text className="text-muted">
             {venue.location.city}, {venue.location.country}
-          </p>
+          </Card.Text>
         )}
-        <p className="mt-2 font-bold">${venue.price}/night</p>
-      </div>
-    </Link>
+        <Card.Text className="fw-bold">${venue.price}/night</Card.Text>
+      </Card.Body>
+    </Card>
   );
-};
-
-export default VenueCard;
+}
