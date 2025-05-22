@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { useAuth } from '../auth/AuthContext'
 import Logo from '../assets/images/holidaze-logo.svg'
 
+// exactly the same styles as your NavLink
 const NavLink = styled(Link)`
   color: var(--bs-primary);
   font-family: var(--font-sans);
@@ -17,13 +18,30 @@ const NavLink = styled(Link)`
   }
 `
 
+// a button that looks just like the NavLink
+const NavButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--bs-primary);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+
+  &:hover {
+    color: #1e473f;
+  }
+`
+
 export default function Navbar() {
   const navigate = useNavigate()
   const { user, isAuthenticated, logout } = useAuth()
 
   function handleLogout() {
-    logout()       // clear token & user
-    navigate('/')  // redirect to homepage
+    logout()
+    navigate('/')
   }
 
   return (
@@ -34,18 +52,15 @@ export default function Navbar() {
           <img src={Logo} alt="Holidaze logo" height={96} />
         </Link>
 
-        <div className="d-flex gap-4 align-items-center">
+        <div className="d-flex gap-5 align-items-center">
           {isAuthenticated ? (
             <>
               <NavLink to={user!.venueManager ? "/account/manager" : "/account/customer"}>
                 My Account
               </NavLink>
-              <button
-                onClick={handleLogout}
-                className="btn btn-outline-secondary"
-              >
+              <NavButton onClick={handleLogout}>
                 Log out
-              </button>
+              </NavButton>
             </>
           ) : (
             <>
