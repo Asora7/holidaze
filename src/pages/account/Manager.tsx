@@ -77,6 +77,11 @@ export default function ManagerAccount() {
                 setActiveVenue(null)  // clear for “create” mode
                 setShowModal(true)
               }}
+              style={{
+                backgroundColor: 'var(--bs-secondary)',
+                borderColor:     'var(--bs-secondary)',
+                color:           '#000',
+              }}
             >
               + New venue
             </Button>

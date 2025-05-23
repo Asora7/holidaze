@@ -190,14 +190,20 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
               Cancel
             </Button>
             <Button
-              type="submit"
-              variant="primary"
-              disabled={submitting}
-            >
-              {submitting
-                ? <><Spinner as="span" animation="border" size="sm" /> Saving…</>
-                : venue ? "Save changes" : "Create"}
-            </Button>
+  type="submit"
+  disabled={submitting}
+  style={{
+    backgroundColor: 'var(--bs-secondary)',
+    borderColor:     'var(--bs-secondary)',
+    color:           '#000',
+    fontWeight:      600,
+  }}
+>
+  {submitting
+    ? <><Spinner as="span" animation="border" size="sm" /> Saving…</>
+    : venue ? "Save changes" : "Create"}
+</Button>
+
           </div>
         </Form>
       </Card.Body>
