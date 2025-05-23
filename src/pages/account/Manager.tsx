@@ -96,7 +96,7 @@ export default function ManagerAccount() {
         >
           <div className="d-flex align-items-center">
             <img
-              src={v.pictureUrl}
+              src={v.media?.[0]?.url || '/images/venue-placeholder.png'}
               alt={v.name}
               className="rounded me-3"
               style={{ width: 48, height: 48, objectFit: 'cover' }}
