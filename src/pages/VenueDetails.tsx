@@ -47,18 +47,27 @@ export default function VenueDetails() {
         {/* ————————————— Left column ————————————— */}
         <Col lg={8}>
           <h1 className="mb-3">{venue.name}</h1>
-          <Carousel controls indicators className="rounded shadow-sm mb-4">
-            {venue.media?.map((m: any, i: number) => (
-              <Carousel.Item key={i}>
-                <img
-                  className="d-block w-100"
-                  style={{ height: '400px', objectFit: 'cover' }}
-                  src={m.url}
-                  alt={`${venue.name} ${i + 1}`}
-                />
-              </Carousel.Item>
-            ))}
-          </Carousel>
+          <Carousel
+  controls
+  indicators
+  className="rounded-4 shadow-sm mb-4"
+>
+  {venue.media?.map((m: any, i: number) => (
+    <Carousel.Item key={i}>
+      <img
+        className="d-block w-100 rounded-4"
+        style={{
+          height: '400px',
+          objectFit: 'cover',
+          borderRadius: '1rem',  // match Bootstrap’s rounded-4
+        }}
+        src={m.url}
+        alt={`${venue.name} ${i + 1}`}
+      />
+    </Carousel.Item>
+  ))}
+</Carousel>
+
 
           <Row className="mb-4 text-muted">
             <Col>
