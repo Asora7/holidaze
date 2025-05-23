@@ -134,15 +134,6 @@ export default function VenueDetails() {
 
             {/* ← your date picker & button */}
             <DateSelector venueId={id!} price={venue.price} />
-
-            <button
-              className="btn btn-warning w-100 mt-3"
-              onClick={() => {
-                /* you can forward this into DateSelector’s attemptBooking */
-              }}
-            >
-              Book Now
-            </button>
           </Card>
         </Col>
       </Row>

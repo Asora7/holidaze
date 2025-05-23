@@ -92,13 +92,13 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
           minDate={new Date()}
         />
 
-        <Button
-          className="mt-4 w-full"
-          variant="warning"
-          disabled={!startDate || !endDate}
-          onClick={attemptBooking}
-        >
-          Book from {startDate?.toLocaleDateString()} to {endDate?.toLocaleDateString()}
+      <Button
+      className="mt-4 w-100"
+       variant="warning"
+       disabled={!startDate || !endDate}
+       onClick={attemptBooking}
+       >
+        Book Now
         </Button>
       </div>
 
