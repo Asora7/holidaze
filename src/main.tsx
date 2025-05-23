@@ -5,7 +5,9 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { AuthProvider } from './auth/AuthContext'
 
+// Styles
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'  // ← add this
 import './index.css'
 import 'react-toastify/dist/ReactToastify.css'
 

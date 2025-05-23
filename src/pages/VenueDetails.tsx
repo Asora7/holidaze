@@ -4,6 +4,17 @@ import { useState, useEffect } from 'react'
 import { fetchVenueById } from '../api/venuesApi'
 import DateSelector from '../components/DateSelector'
 
+import {
+  Container,
+  Row,
+  Col,
+  Carousel,
+  Card,
+  Badge,
+  Spinner,
+} from 'react-bootstrap'
+import { StarFill, PeopleFill } from 'react-bootstrap-icons'
+
 export default function VenueDetails() {
   const { id } = useParams<{ id: string }>()
   const [venue, setVenue] = useState<any>(null)
@@ -19,30 +30,122 @@ export default function VenueDetails() {
       .finally(() => setLoading(false))
   }, [id])
 
-  if (loading) return <p className="text-center my-8">Loading…</p>
-  if (error)   return <p className="text-center text-red-500">{error}</p>
-  if (!venue) return <p className="text-center">No venue found.</p>
-
-  const imageUrl = venue.media?.[0]?.url ?? '/images/placeholder.png'
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center my-5">
+        <Spinner animation="border" />
+      </div>
+    )
+  if (error)
+    return <p className="text-center text-danger my-5">{error}</p>
+  if (!venue) return <p className="text-center my-5">No venue found.</p>
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold">{venue.name}</h1>
-      <img
-        src={imageUrl}
-        alt={venue.name}
-        className="w-full h-64 object-cover rounded"
-      />
-      <p>{venue.description}</p>
-      <ul className="space-y-1">
-        <li><strong>Price:</strong> ${venue.price} / day</li>
-        <li><strong>Location:</strong> {venue.location.city}, {venue.location.country}</li>
-        <li><strong>Max Guests:</strong> {venue.maxGuests}</li>
-        <li><strong>Rating:</strong> {venue.rating} ⭐️</li>
-      </ul>
+    <Container className="my-5">
+      <Row>
+        {/* ————————————— Left column ————————————— */}
+        <Col lg={8}>
+          <h1 className="mb-3">{venue.name}</h1>
+          <Carousel className="rounded shadow-sm mb-4">
+            {venue.media?.map((m: any, i: number) => (
+              <Carousel.Item key={i}>
+                <img
+                  className="d-block w-100"
+                  style={{ height: '400px', objectFit: 'cover' }}
+                  src={m.url}
+                  alt={`${venue.name} ${i + 1}`}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
+          <Row className="mb-4 text-muted">
+            <Col>
+              <small>
+                <i className="bi bi-geo-alt-fill me-1" />
+                {venue.location.city}, {venue.location.country}
+              </small>
+            </Col>
+          </Row>
 
-      {/* ← here is the calendar & button */}
-      <DateSelector venueId={id!} price={venue.price} />
-    </div>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Description</Card.Title>
+              <Card.Text>{venue.description}</Card.Text>
+            </Card.Body>
+          </Card>
+
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Facilities</Card.Title>
+              <ul className="list-unstyled mb-0">
+                <li>
+                  <i className="bi bi-wifi text-primary me-2" />
+                  Free high-speed Wi-Fi
+                </li>
+                <li>
+                  <i className="bi bi-snow text-primary me-2" />
+                  Air conditioning throughout
+                </li>
+                <li>
+                  <i className="bi bi-broom text-primary me-2" />
+                  Housekeeping included
+                </li>
+                <li>
+                  <i className="bi bi-droplet text-primary me-2" />
+                  Private infinity pool with sea view
+                </li>
+                <li>
+                  <i className="bi bi-door-open text-primary me-2" />
+                  Beach right outside the door
+                </li>
+                <li>
+                  <i className="bi bi-cart-check text-primary me-2" />
+                  Free private parking
+                </li>
+                <li>
+                  <i className="bi bi-paw text-primary me-2" />
+                  Pets allowed
+                </li>
+              </ul>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* ————————————— Right column ————————————— */}
+        <Col lg={4}>
+          <Card className="p-4 shadow-sm sticky-top" style={{ top: '80px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h4 className="mb-1">
+                  ${venue.price}{' '}
+                  <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+                    per night
+                  </small>
+                </h4>
+                <Badge bg="warning" className="text-dark">
+                  <StarFill /> {venue.rating.toFixed(1)}
+                </Badge>
+              </div>
+              <div className="text-center">
+                <PeopleFill size={24} className="me-1 text-secondary" />
+                <div>{venue.maxGuests}</div>
+              </div>
+            </div>
+
+            {/* ← your date picker & button */}
+            <DateSelector venueId={id!} price={venue.price} />
+
+            <button
+              className="btn btn-warning w-100 mt-3"
+              onClick={() => {
+                /* you can forward this into DateSelector’s attemptBooking */
+              }}
+            >
+              Book Now
+            </button>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   )
 }
