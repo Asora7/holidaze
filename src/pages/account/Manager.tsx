@@ -1,90 +1,167 @@
 // src/pages/account/Manager.tsx
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '../../auth/AuthContext';
-import { getProfileVenues } from '../../api/profilesApi';
-import { format, parseISO } from 'date-fns';
-import VenueForm from '../../components/VenueForm';
+import { useEffect, useState } from 'react'
+import { Container, Row, Col, Button, Card, Spinner } from 'react-bootstrap'
+import { useAuth } from '../../auth/AuthContext'
+import { getProfileVenues } from '../../api/profilesApi'
+import { format, parseISO } from 'date-fns'
+import VenueForm from '../../components/VenueForm'
+import ProfileCard from './ProfileCard'
 
 export default function ManagerAccount() {
-  const { user } = useAuth();
-  const [venues, setVenues] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const { user, updateProfileAvatar } = useAuth()
+  const [venues, setVenues] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
 
-  // helper to load venues
-  const fetchVenues = () => {
-    if (!user) return;
-    setLoading(true);
+  // keep local edit of the avatar URL
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || '')
+
+  // load venues on mount / user change
+  useEffect(() => {
+    if (!user) return
+    setLoading(true)
     getProfileVenues(user.name)
       .then(data => setVenues(data))
       .catch(console.error)
-      .finally(() => setLoading(false));
-  };
+      .finally(() => setLoading(false))
+  }, [user])
 
-  // load on mount and when user changes
-  useEffect(fetchVenues, [user]);
+  if (!user) return null
+  if (loading)
+    return (
+      <Container className="py-4">
+        <Spinner animation="border" />
+      </Container>
+    )
 
-  if (!user) return null;         // or <Navigate to="/login" />
-  if (loading) return <p className="p-4">Loading your venues…</p>;
+  // flatten all bookings so we can list them in one card
+  const allBookings = venues.flatMap(v =>
+    v.bookings.map((b: any) => ({ ...b, venue: v }))
+  )
+
+  // callback for saving avatar
+  const handleSaveAvatar = () => {
+    updateProfileAvatar(avatarUrl).catch(console.error)
+  }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">
-        Welcome, {user.name}{' '}
-        <span className="text-gray-500">(Venue Manager)</span>
-      </h1>
+    <Container className="py-4">
+      <Row className="gy-4">
+        {/* ←—— Left column: your existing ProfileCard */}
+        <Col md={4} lg={3} className="position-sticky" style={{ top: '1rem' }}>
+          <ProfileCard
+            profile={{
+              name: user.name,
+              email: user.email,
+              avatar: user.avatar,
+            }}
+            avatarUrl={avatarUrl}
+            onAvatarChange={setAvatarUrl}
+            onSaveAvatar={handleSaveAvatar}
+          />
+        </Col>
 
-      {/* New venue button */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="px-4 py-2 bg-green-500 text-white rounded"
-      >
-        + New venue
-      </button>
-
-      {/* Create venue form */}
-      {showForm && (
-        <VenueForm
-          onCreated={() => {
-            setShowForm(false);
-            fetchVenues();
-          }}
-          onCancel={() => setShowForm(false)}
-        />
-      )}
-
-      {/* List existing venues */}
-      {venues.length === 0 ? (
-        <p>You haven’t created any venues yet.</p>
-      ) : (
-        venues.map(venue => (
-          <div
-            key={venue.id}
-            className="border rounded-lg p-4 shadow-sm space-y-2"
-          >
-            <h2 className="text-xl font-semibold">{venue.name}</h2>
-            <p className="text-gray-600">
-              {venue.location.city}, {venue.location.country}
-            </p>
-
-            <h3 className="mt-4 font-semibold">Bookings</h3>
-            {venue.bookings.length === 0 ? (
-              <p>No one has booked this venue yet.</p>
-            ) : (
-              <ul className="list-disc list-inside space-y-1">
-                {venue.bookings.map((b: any) => (
-                  <li key={b.id}>
-                    {format(parseISO(b.dateFrom), 'MMM d, yyyy')} &ndash;{' '}
-                    {format(parseISO(b.dateTo), 'MMM d, yyyy')} (
-                    {b.guests} guest{b.guests > 1 ? 's' : ''})
-                  </li>
-                ))}
-              </ul>
-            )}
+        {/* ——→ Right column: manager content */}
+        <Col lg={8}>
+          {/* header + new-venue button */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <Button onClick={() => setShowForm(true)}>+ New venue</Button>
           </div>
-        ))
-      )}
-    </div>
-  );
+
+          {/* venue creation form */}
+          {showForm && (
+            <VenueForm
+              onCreated={() => {
+                setShowForm(false)
+                getProfileVenues(user.name).then(setVenues)
+              }}
+              onCancel={() => setShowForm(false)}
+            />
+          )}
+
+          {/* two-card grid: My Venues + Upcoming Bookings */}
+          <Row>
+            {/* My Venues */}
+            <Col md={6}>
+              <Card className="mb-4 shadow-sm">
+                <Card.Body>
+                  <Card.Title>My Venues</Card.Title>
+                  {venues.length === 0 ? (
+                    <p>You haven’t created any venues yet.</p>
+                  ) : (
+                    venues.map(v => (
+                      <div
+                        key={v.id}
+                        className="d-flex justify-content-between align-items-center py-2 border-bottom"
+                      >
+                        <div className="d-flex align-items-center">
+                          <img
+                            src={v.pictureUrl}
+                            alt={v.name}
+                            className="rounded me-3"
+                            style={{ width: 48, height: 48, objectFit: 'cover' }}
+                          />
+                          <div>
+                            <div>{v.name}</div>
+                            <small className="text-muted">
+                              {v.location.city}, {v.location.country}
+                            </small>
+                          </div>
+                        </div>
+                        <div>
+                          <Button size="sm" variant="outline-secondary" className="me-2">
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="danger">
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+
+            {/* Upcoming Bookings */}
+            <Col md={6}>
+              <Card className="mb-4 shadow-sm">
+                <Card.Body>
+                  <Card.Title>Upcoming Bookings</Card.Title>
+                  {allBookings.length === 0 ? (
+                    <p>No upcoming bookings.</p>
+                  ) : (
+                    allBookings.map(b => (
+                      <div
+                        key={b.id}
+                        className="d-flex align-items-center py-2 border-bottom"
+                      >
+                        <img
+                          src={b.venue.pictureUrl}
+                          alt={b.venue.name}
+                          className="rounded me-3"
+                          style={{ width: 48, height: 48, objectFit: 'cover' }}
+                        />
+                        <div>
+                          <div>{b.venue.name}</div>
+                          <small className="text-muted d-block">
+                            {format(parseISO(b.dateFrom), 'MMM d, yyyy')} –{' '}
+                            {format(parseISO(b.dateTo), 'MMM d, yyyy')}
+                          </small>
+                          <small className="text-muted">
+                            {b.guests} guest{b.guests > 1 ? 's' : ''}
+                          </small>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </Container>
+  )
 }
