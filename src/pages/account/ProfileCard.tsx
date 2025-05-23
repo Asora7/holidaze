@@ -1,63 +1,105 @@
-//pages/account/ProfileCard.tsx
+// src/pages/account/ProfileCard.tsx
 
-import { useEffect, useState } from 'react'
-import { useAuth } from '../../auth/AuthContext'
-import { getProfile, updateProfileAvatar } from '../../api/profilesApi'
+import { useState } from 'react'
+import { Card, Button, Form, Spinner, Image, Stack } from 'react-bootstrap'
 
-export default function ProfileCard() {
-  const { user } = useAuth()
-  const [profile, setProfile] = useState<any>(null)
-  const [avatarUrl, setAvatarUrl] = useState('')
+interface ProfileCardProps {
+  profile: { name: string; email: string; avatar?: string }
+  avatarUrl: string
+  onAvatarChange: (url: string) => void
+  onSaveAvatar: () => void
+}
 
-  useEffect(() => {
-    if (!user) return
-    getProfile(user.name)
-      .then(p => {
-        setProfile(p)
-        setAvatarUrl(p.avatar?.url || '')
-      })
-      .catch(console.error)
-  }, [user])
+export default function ProfileCard({
+  profile,
+  avatarUrl,
+  onAvatarChange,
+  onSaveAvatar,
+}: ProfileCardProps) {
+  const [editing, setEditing] = useState(false)
 
-  if (!profile) return <p>Loading profile…</p>
-
-  const handleSave = () => {
-    updateProfileAvatar(profile.name, avatarUrl)
-      .then(updated => {
-        setProfile(updated)
-        alert('Avatar updated!')
-      })
-      .catch(e => alert(e.message))
+  if (!profile) {
+    return (
+      <Card className="text-center shadow-sm">
+        <Card.Body>
+          <Spinner animation="border" />
+        </Card.Body>
+      </Card>
+    )
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col items-center space-y-2">
-        <img
-          src={profile.avatar?.url || '/images/avatar-placeholder.png'}
-          alt="Your avatar"
-          className="w-32 h-32 rounded-full border object-cover"
+    <Card
+      className="h-100 shadow-sm"
+      style={{ transition: 'transform .15s ease' }}
+      onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
+      onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
+    >
+      <Card.Body className="d-flex flex-column align-items-center p-4">
+        <Image
+          src={profile.avatar || '/images/avatar-placeholder.png'}
+          roundedCircle
+          width={128}
+          height={128}
+          className="mb-3 border"
         />
-        <h2 className="text-xl font-semibold">{profile.name}</h2>
-        <p className="text-gray-600">{profile.email}</p>
-      </div>
 
-      <div className="space-y-1">
-        <label className="block text-sm font-medium">Avatar URL</label>
-        <input
-          type="text"
-          value={avatarUrl}
-          onChange={e => setAvatarUrl(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
-          placeholder="https://..."
-        />
-        <button
-          onClick={handleSave}
-          className="mt-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
-        >
-          Save
-        </button>
-      </div>
-    </div>
+        {!editing ? (
+          <Button
+            variant="outline-primary"
+            size="sm"
+            className="w-50 mb-3"
+            onClick={() => setEditing(true)}
+          >
+            Edit
+          </Button>
+        ) : (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            className="w-50 mb-3"
+            onClick={() => setEditing(false)}
+          >
+            Cancel
+          </Button>
+        )}
+
+        <Card.Title className="mb-1">{profile.name}</Card.Title>
+        <Card.Text className="text-muted mb-3">{profile.email}</Card.Text>
+
+        {editing && (
+          <Form className="w-100 mt-3">
+            <Form.Group className="mb-3">
+              <Form.Label>Avatar URL</Form.Label>
+              <Form.Control
+                type="url"
+                value={avatarUrl}
+                placeholder="https://…"
+                onChange={e => onAvatarChange(e.currentTarget.value)}
+              />
+            </Form.Group>
+            <Stack direction="horizontal" gap={2} className="justify-content-end">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setEditing(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="warning"
+                size="sm"
+                onClick={() => {
+                  onSaveAvatar()
+                  setEditing(false)
+                }}
+              >
+                Save
+              </Button>
+            </Stack>
+          </Form>
+        )}
+      </Card.Body>
+    </Card>
   )
 }
