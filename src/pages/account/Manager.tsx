@@ -14,6 +14,7 @@ import { getProfileVenues } from '../../api/profilesApi'
 import { format, parseISO } from 'date-fns'
 import VenueForm from '../../components/VenueForm'
 import ProfileCard from './ProfileCard'
+import { deleteVenue } from '../../api/venuesApi'
 
 export default function ManagerAccount() {
   const { user, updateProfileAvatar } = useAuth()
@@ -83,51 +84,70 @@ export default function ManagerAccount() {
 
           {/* “My Venues” list */}
           <Card className="mb-4 shadow-sm">
-            <Card.Body>
-              <Card.Title>My Venues</Card.Title>
-              {venues.length === 0 ? (
-                <p>You haven’t created any venues yet.</p>
-              ) : (
-                venues.map(v => (
-                  <div
-                    key={v.id}
-                    className="d-flex justify-content-between align-items-center py-2 border-bottom"
-                  >
-                    <div className="d-flex align-items-center">
-                      <img
-                        src={v.pictureUrl}
-                        alt={v.name}
-                        className="rounded me-3"
-                        style={{ width: 48, height: 48, objectFit: 'cover' }}
-                      />
-                      <div>
-                        <div>{v.name}</div>
-                        <small className="text-muted">
-                          {v.location.city}, {v.location.country}
-                        </small>
-                      </div>
-                    </div>
-                    <div>
-                      <Button
-                        size="sm"
-                        variant="outline-secondary"
-                        className="me-2"
-                        onClick={() => {
-                          setActiveVenue(v)  // load into form for editing
-                          setShowModal(true)
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button size="sm" variant="danger">
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </Card.Body>
-          </Card>
+  <Card.Body>
+    <Card.Title>My Venues</Card.Title>
+    {venues.length === 0 ? (
+      <p>You haven’t created any venues yet.</p>
+    ) : (
+      venues.map(v => (
+        <div
+          key={v.id}
+          className="d-flex justify-content-between align-items-center py-2 border-bottom"
+        >
+          <div className="d-flex align-items-center">
+            <img
+              src={v.pictureUrl}
+              alt={v.name}
+              className="rounded me-3"
+              style={{ width: 48, height: 48, objectFit: 'cover' }}
+            />
+            <div>
+              <div>{v.name}</div>
+              <small className="text-muted">
+                {v.location.city}, {v.location.country}
+              </small>
+            </div>
+          </div>
+          <div>
+            <Button
+              size="sm"
+              variant="outline-secondary"
+              className="me-2"
+              onClick={() => {
+                setActiveVenue(v)  // load into form for editing
+                setShowModal(true)
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              size="sm"
+              variant="danger"
+              onClick={async () => {
+                if (
+                  !window.confirm(
+                    `Delete venue "${v.name}"? This cannot be undone.`
+                  )
+                ) {
+                  return
+                }
+                try {
+                  await deleteVenue(v.id)  // hit DELETE /venues/:id
+                  await refresh()          // re-fetch your list
+                } catch (err: any) {
+                  console.error(err)
+                  alert(`Could not delete: ${err.message}`)
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      ))
+    )}
+  </Card.Body>
+</Card>
 
           {/* “Upcoming Bookings” */}
           <Card className="mb-4 shadow-sm">

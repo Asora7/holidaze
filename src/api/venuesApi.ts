@@ -112,3 +112,24 @@ export async function updateVenue(
   });
   return handleResponse(res);
 }
+
+/** DELETE /holidaze/venues/:id — Remove a venue (manager only) */
+export async function deleteVenue(id: string): Promise<void> {
+    const token  = localStorage.getItem("token");
+    const apiKey = import.meta.env.VITE_API_KEY;
+    const res = await fetch(`${H_API}/venues/${id}`, {
+      method: "DELETE",
+      headers: {
+        "X-Noroff-API-Key": apiKey ?? "",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+  
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error((body as any).message || res.statusText);
+    }
+  
+    // no JSON on a successful DELETE
+    return;
+  }
