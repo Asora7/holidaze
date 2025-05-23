@@ -7,18 +7,23 @@ import { getVenueWithBookings, createBooking } from '../api/bookingsApi'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { addDays, parseISO } from 'date-fns'
-import { Modal, Button } from 'react-bootstrap'
+import { Modal, Button, Form } from 'react-bootstrap'
 
 interface DateSelectorProps {
   venueId: string
   price: number
+  maxGuests: number
 }
 
-export default function DateSelector({ venueId }: DateSelectorProps) {
+export default function DateSelector({
+  venueId,
+  maxGuests,
+}: DateSelectorProps) {
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [unavailable, setUnavailable] = useState<Date[]>([])
   const [showConfirm, setShowConfirm] = useState(false)
+  const [guests, setGuests] = useState<number>(1)
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -67,7 +72,7 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
         venueId,
         dateFrom: startDate!.toISOString().split('T')[0],
         dateTo:   endDate!.toISOString().split('T')[0],
-        guests:   1,
+        guests, 
       })
       navigate('/account/customer')
     } catch (err: any) {
@@ -77,7 +82,7 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
 
   return (
     <>
-      <div className="p-4 border rounded-lg shadow-sm">
+      <div className="p-4 border rounded shadow-sm">
         <ReactDatePicker
           inline
           selectsRange
@@ -90,15 +95,27 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
           }}
           excludeDates={unavailable}
           minDate={new Date()}
+          calendarClassName="shadow rounded"
         />
 
-      <Button
-      className="mt-4 w-100"
-       variant="warning"
-       disabled={!startDate || !endDate}
-       onClick={attemptBooking}
-       >
-        Book Now
+        <Form.Group className="mt-3">
+          <Form.Label>Guests</Form.Label>
+          <Form.Control
+            type="number"
+            min={1}
+            max={maxGuests}
+            value={guests}
+            onChange={(e) => setGuests(Number(e.target.value))}
+          />
+        </Form.Group>
+
+        <Button
+          className="mt-3 w-100"
+          variant="warning"
+          disabled={!startDate || !endDate || guests < 1}
+          onClick={attemptBooking}
+        >
+          Book Now
         </Button>
       </div>
 
@@ -109,7 +126,8 @@ export default function DateSelector({ venueId }: DateSelectorProps) {
         <Modal.Body>
           Are you sure you want to book from{' '}
           <strong>{startDate?.toLocaleDateString()}</strong> to{' '}
-          <strong>{endDate?.toLocaleDateString()}</strong>?
+          <strong>{endDate?.toLocaleDateString()}</strong> for{' '}
+          <strong>{guests} guest{guests > 1 ? 's' : ''}</strong>?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowConfirm(false)}>

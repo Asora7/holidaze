@@ -1,4 +1,5 @@
 // src/pages/VenueDetails.tsx
+
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { fetchVenueById } from '../api/venuesApi'
@@ -46,7 +47,7 @@ export default function VenueDetails() {
         {/* ————————————— Left column ————————————— */}
         <Col lg={8}>
           <h1 className="mb-3">{venue.name}</h1>
-          <Carousel className="rounded shadow-sm mb-4">
+          <Carousel controls indicators className="rounded shadow-sm mb-4">
             {venue.media?.map((m: any, i: number) => (
               <Carousel.Item key={i}>
                 <img
@@ -58,6 +59,7 @@ export default function VenueDetails() {
               </Carousel.Item>
             ))}
           </Carousel>
+
           <Row className="mb-4 text-muted">
             <Col>
               <small>
@@ -84,7 +86,7 @@ export default function VenueDetails() {
                 </li>
                 <li>
                   <i className="bi bi-snow text-primary me-2" />
-                  Air conditioning throughout
+                  Air conditioning
                 </li>
                 <li>
                   <i className="bi bi-broom text-primary me-2" />
@@ -92,15 +94,15 @@ export default function VenueDetails() {
                 </li>
                 <li>
                   <i className="bi bi-droplet text-primary me-2" />
-                  Private infinity pool with sea view
+                  Private infinity pool
                 </li>
                 <li>
                   <i className="bi bi-door-open text-primary me-2" />
-                  Beach right outside the door
+                  Beach access
                 </li>
                 <li>
                   <i className="bi bi-cart-check text-primary me-2" />
-                  Free private parking
+                  Free parking
                 </li>
                 <li>
                   <i className="bi bi-paw text-primary me-2" />
@@ -132,8 +134,11 @@ export default function VenueDetails() {
               </div>
             </div>
 
-            {/* ← your date picker & button */}
-            <DateSelector venueId={id!} price={venue.price} />
+            <DateSelector
+              venueId={id!}
+              price={venue.price}
+              maxGuests={venue.maxGuests}
+            />
           </Card>
         </Col>
       </Row>
