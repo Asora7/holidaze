@@ -44,8 +44,6 @@ const FooterText = styled.p`
 export default function Footer() {
   return (
     <FooterContainer>
-      <FooterLink href="#">Privacy Policy</FooterLink>
-      <FooterLink href="#">Terms &amp; Conditions</FooterLink>
       <FooterText>© 2025 Holidaze. All Rights Reserved.</FooterText>
     </FooterContainer>
   )
