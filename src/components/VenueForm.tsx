@@ -1,29 +1,29 @@
-//components/VenueForm.tsx
-
-import React, { useState } from "react";
-import { createVenue } from "../api/venuesApi";
+// components/VenueForm.tsx
+import React, { useState } from "react"
+import { Card, Form, Row, Col, Button, Spinner } from "react-bootstrap"
+import { createVenue } from "../api/venuesApi"
 
 interface Props {
-  onCreated: () => void;
-  onCancel: () => void;
+  onCreated: () => void
+  onCancel: () => void
 }
 
 export default function VenueForm({ onCreated, onCancel }: Props) {
-  const [name, setName]               = useState("");
-  const [imageUrl, setImageUrl]       = useState("");
-  const [price, setPrice]             = useState<number>(0);
-  const [city, setCity]               = useState("");
-  const [maxGuests, setMaxGuests]     = useState<number>(1);
-  const [description, setDescription] = useState("");
-  const [wifi, setWifi]               = useState(false);
-  const [parking, setParking]         = useState(false);
-  const [breakfast, setBreakfast]     = useState(false);
-  const [pets, setPets]               = useState(false);
+  const [name, setName]               = useState("")
+  const [imageUrl, setImageUrl]       = useState("")
+  const [price, setPrice]             = useState<number>(0)
+  const [city, setCity]               = useState("")
+  const [maxGuests, setMaxGuests]     = useState<number>(1)
+  const [description, setDescription] = useState("")
+  const [wifi, setWifi]               = useState(false)
+  const [parking, setParking]         = useState(false)
+  const [breakfast, setBreakfast]     = useState(false)
+  const [pets, setPets]               = useState(false)
+  const [submitting, setSubmitting]   = useState(false)
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
     try {
       await createVenue({
         name,
@@ -33,131 +33,156 @@ export default function VenueForm({ onCreated, onCancel }: Props) {
         maxGuests,
         meta: { wifi, parking, breakfast, pets },
         location: { city },
-      });
-      alert("Venue created!");
-      onCreated();
+      })
+      onCreated()
     } catch (err: any) {
-      alert("Failed to create venue: " + err.message);
+      alert("Failed to create venue: " + err.message)
+    } finally {
+      setSubmitting(false)
     }
-  };
+  }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-6 bg-white rounded-lg shadow space-y-4"
-    >
-      <h2 className="text-xl font-semibold">Create Venue</h2>
+    <Row className="justify-content-center mb-4">
+      <Col lg={6} md={8}>
+        <Card className="shadow-sm rounded-3">
+          <Card.Body>
+            <Card.Title className="mb-4">Create Venue</Card.Title>
 
-      <label className="block">
-        Name
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          required
-          className="w-full border rounded px-2 py-1"
-        />
-      </label>
+            <Form onSubmit={handleSubmit}>
 
-      <label className="block">
-        Image URL
-        <input
-          value={imageUrl}
-          onChange={e => setImageUrl(e.target.value)}
-          className="w-full border rounded px-2 py-1"
-        />
-      </label>
+              {/* Name */}
+              <Form.Group className="mb-3" controlId="venueName">
+                <Form.Label>Name</Form.Label>
+                <Form.Control 
+                  type="text" 
+                  value={name} 
+                  onChange={e => setName(e.target.value)} 
+                  required 
+                  placeholder="Enter venue name"
+                />
+              </Form.Group>
 
-      <label className="block">
-        Price per night
-        <input
-          type="number"
-          value={price}
-          onChange={e => setPrice(+e.target.value)}
-          required
-          className="w-full border rounded px-2 py-1"
-        />
-      </label>
+              {/* Image URL */}
+              <Form.Group className="mb-3" controlId="venueImage">
+                <Form.Label>Image URL</Form.Label>
+                <Form.Control 
+                  type="url" 
+                  value={imageUrl} 
+                  onChange={e => setImageUrl(e.target.value)} 
+                  placeholder="https://example.com/photo.jpg"
+                />
+              </Form.Group>
 
-      <label className="block">
-        City
-        <input
-          value={city}
-          onChange={e => setCity(e.target.value)}
-          className="w-full border rounded px-2 py-1"
-        />
-      </label>
+              {/* Price + City + Capacity */}
+              <Row className="g-3 mb-3">
+                <Col sm={4}>
+                  <Form.Group controlId="venuePrice">
+                    <Form.Label>Price</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={price}
+                      onChange={e => setPrice(+e.target.value)}
+                      required
+                      placeholder="€/night"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col sm={4}>
+                  <Form.Group controlId="venueCity">
+                    <Form.Label>City</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={city}
+                      onChange={e => setCity(e.target.value)}
+                      placeholder="City"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col sm={4}>
+                  <Form.Group controlId="venueGuests">
+                    <Form.Label>Capacity</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={maxGuests}
+                      onChange={e => setMaxGuests(+e.target.value)}
+                      required
+                      placeholder="Max guests"
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
 
-      <label className="block">
-        Capacity
-        <input
-          type="number"
-          value={maxGuests}
-          onChange={e => setMaxGuests(+e.target.value)}
-          required
-          className="w-full border rounded px-2 py-1"
-        />
-      </label>
+              {/* Amenities */}
+              <fieldset className="mb-3">
+                <Form.Label as="legend" column className="mb-2">
+                  Amenities
+                </Form.Label>
+                <Form.Check 
+                  type="checkbox"
+                  id="amenityWifi"
+                  label="Free wifi"
+                  checked={wifi}
+                  onChange={() => setWifi(!wifi)}
+                />
+                <Form.Check 
+                  type="checkbox"
+                  id="amenityParking"
+                  label="Free parking"
+                  checked={parking}
+                  onChange={() => setParking(!parking)}
+                />
+                <Form.Check 
+                  type="checkbox"
+                  id="amenityBreakfast"
+                  label="Breakfast"
+                  checked={breakfast}
+                  onChange={() => setBreakfast(!breakfast)}
+                />
+                <Form.Check 
+                  type="checkbox"
+                  id="amenityPets"
+                  label="Pets allowed"
+                  checked={pets}
+                  onChange={() => setPets(!pets)}
+                />
+              </fieldset>
 
-      <fieldset className="flex flex-wrap gap-4">
-        <label>
-          <input
-            type="checkbox"
-            checked={wifi}
-            onChange={() => setWifi(!wifi)}
-          />{" "}
-          Free wifi
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={parking}
-            onChange={() => setParking(!parking)}
-          />{" "}
-          Free parking
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={breakfast}
-            onChange={() => setBreakfast(!breakfast)}
-          />{" "}
-          Breakfast
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={pets}
-            onChange={() => setPets(!pets)}
-          />{" "}
-          Pets allowed
-        </label>
-      </fieldset>
+              {/* Description */}
+              <Form.Group className="mb-4" controlId="venueDescription">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                />
+              </Form.Group>
 
-      <label className="block">
-        Description
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          rows={4}
-          className="w-full border rounded px-2 py-1"
-        />
-      </label>
-
-      <div className="flex space-x-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 border rounded"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-yellow-500 text-white rounded"
-        >
-          Create
-        </button>
-      </div>
-    </form>
-  );
+              {/* Buttons */}
+              <div className="d-flex justify-content-end">
+                <Button 
+                  variant="secondary" 
+                  className="me-2" 
+                  onClick={onCancel}
+                  disabled={submitting}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="primary"
+                  disabled={submitting}
+                >
+                  {submitting 
+                    ? <><Spinner as="span" animation="border" size="sm" /> Creating…</> 
+                    : "Create"}
+                </Button>
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
+  )
 }
