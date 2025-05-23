@@ -83,21 +83,26 @@ export default function DateSelector({
   return (
     <>
       <div className="p-4 border rounded shadow-sm">
-        <ReactDatePicker
-          inline
-          selectsRange
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(dates) => {
-            const [start, end] = dates as [Date, Date]
-            setStartDate(start)
-            setEndDate(end)
-          }}
-          excludeDates={unavailable}
-          minDate={new Date()}
-          calendarClassName="shadow rounded"
-        />
-
+        {/* center the calendar */}
+        <div className="d-flex justify-content-center mb-3">
+          <div style={{ display: 'inline-block' }}>
+            <ReactDatePicker
+              inline
+              selectsRange
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(dates) => {
+                const [start, end] = dates as [Date, Date]
+                setStartDate(start)
+                setEndDate(end)
+              }}
+              excludeDates={unavailable}
+              minDate={new Date()}
+              calendarClassName="shadow rounded"
+            />
+          </div>
+        </div>
+  
         <Form.Group className="mt-3">
           <Form.Label>Guests</Form.Label>
           <Form.Control
@@ -108,7 +113,7 @@ export default function DateSelector({
             onChange={(e) => setGuests(Number(e.target.value))}
           />
         </Form.Group>
-
+  
         <Button
           className="mt-3 w-100"
           variant="warning"
@@ -118,7 +123,7 @@ export default function DateSelector({
           Book Now
         </Button>
       </div>
-
+  
       <Modal show={showConfirm} onHide={() => setShowConfirm(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Your Booking</Modal.Title>
@@ -127,7 +132,10 @@ export default function DateSelector({
           Are you sure you want to book from{' '}
           <strong>{startDate?.toLocaleDateString()}</strong> to{' '}
           <strong>{endDate?.toLocaleDateString()}</strong> for{' '}
-          <strong>{guests} guest{guests > 1 ? 's' : ''}</strong>?
+          <strong>
+            {guests} guest{guests > 1 ? 's' : ''}
+          </strong>
+          ?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowConfirm(false)}>
@@ -140,4 +148,5 @@ export default function DateSelector({
       </Modal>
     </>
   )
+  
 }
