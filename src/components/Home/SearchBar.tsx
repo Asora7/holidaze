@@ -23,7 +23,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-5">
       <Form onSubmit={handleSubmit}>
         <Row className="g-2 align-items-center">
           <Col md>

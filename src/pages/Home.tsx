@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import Hero from '../components/Home/Hero';
 import SearchBar from '../components/Home/SearchBar';
 import LocationSelector from '../components/Home/LocationSelector';
@@ -9,13 +9,15 @@ import VenueGrid from '../components/VenueGrid';
 import { fetchAllVenues } from '../api/venuesApi';
 
 const DESTINATIONS = ['Oslo', 'Amsterdam', 'Thailand', 'Spain'];
+const PAGE_SIZE    = 9; // number of venues to show per “page”
 
 export default function Home() {
-  const [venues, setVenues]     = useState<any[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [location, setLocation] = useState('all');
-  const [filter, setFilter]     = useState(FILTER_OPTIONS[0]);
-  const [query, setQuery]       = useState('');
+  const [venues, setVenues]           = useState<any[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [location, setLocation]       = useState('all');
+  const [filter, setFilter]           = useState(FILTER_OPTIONS[0]);
+  const [query, setQuery]             = useState('');
+  const [itemsToShow, setItemsToShow] = useState(PAGE_SIZE);
 
   useEffect(() => {
     setLoading(true);
@@ -38,10 +40,12 @@ export default function Home() {
           return nameMatch || descMatch || cityMatch;
         });
         setVenues(filtered);
+        setItemsToShow(PAGE_SIZE); // reset to first “page”
       })
       .finally(() => setLoading(false));
   }
 
+  // Sort venues
   const sorted = useMemo(() => {
     const arr = [...venues];
     switch (filter) {
@@ -54,6 +58,7 @@ export default function Home() {
     }
   }, [venues, filter]);
 
+  // Filter by location
   const displayed = sorted.filter(v => {
     if (location === 'all') return true;
     const city    = v.location?.city || '';
@@ -64,39 +69,63 @@ export default function Home() {
     );
   });
 
+  // Only show the first itemsToShow venues
+  const page = displayed.slice(0, itemsToShow);
+
   return (
     <>
       <Hero />
 
-      <SearchBar onSearch={handleSearch} />
+      <Container className="my-5">
+        <SearchBar onSearch={handleSearch} />
 
-      {query && (
-        <Container className="text-center text-muted my-3">
-          Showing {displayed.length} result{displayed.length !== 1 && 's'} for “{query}”
-        </Container>
-      )}
+        {query && (
+          <div className="text-center text-muted my-4">
+            Showing {displayed.length} result{displayed.length !== 1 && 's'} for “{query}”
+          </div>
+        )}
 
-      {/* New section title */}
-      <Container className="mt-5 mb-3">
-        <h2 className="h5 fw-semibold">Where do you want to go?</h2>
+<h2
+  className="h5 fw-semibold mb-3"
+  style={{ marginTop: '5rem' }}
+>
+  Where do you want to go?
+</h2>
+
+
+        <div className="mb-5">
+          <LocationSelector
+            options={['all', ...DESTINATIONS]}
+            value={location}
+            onChange={setLocation}
+          />
+        </div>
+
+        <div className="mb-5">
+          <FilterDropdown value={filter} onChange={setFilter} />
+        </div>
+
+        {loading ? (
+          <div className="text-center my-5">
+            <p>Loading venues…</p>
+          </div>
+        ) : (
+          <>
+            <VenueGrid venues={page} />
+
+            {itemsToShow < displayed.length && (
+              <div className="text-center mb-5">
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setItemsToShow(s => s + PAGE_SIZE)}
+                >
+                  Load more
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </Container>
-
-      <LocationSelector
-        options={['all', ...DESTINATIONS]}
-        value={location}
-        onChange={setLocation}
-      />
-
-      <FilterDropdown value={filter} onChange={setFilter} />
-
-      {loading ? (
-        <Container className="text-center my-5">
-          <p>Loading venues…</p>
-        </Container>
-      ) : (
-        <VenueGrid venues={displayed} />
-      )}
     </>
   );
 }
-
