@@ -52,40 +52,39 @@ import React, {
   
     const isAuthenticated = !!user
   
-    // If you want to re-fetch the full profile (including avatar) on mount:
+    // Optionally refresh profile on mount
     useEffect(() => {
       if (user) {
-        profilesApi.getProfile(user.name)
+        profilesApi
+          .getProfile(user.name)
           .then((fresh) => {
-            setUser(fresh)
-            localStorage.setItem('user', JSON.stringify(fresh))
+            const updatedUser: User = {
+              name: fresh.name,
+              email: fresh.email,
+              venueManager: fresh.venueManager,
+              avatar: fresh.avatar?.url,
+            }
+            setUser(updatedUser)
+            localStorage.setItem('user', JSON.stringify(updatedUser))
           })
-          .catch(() => {
-            /* ignore */
-          })
+          .catch(() => {})
       }
     }, [])
   
-    // login now also fetches the server profile
     const login = async (authData: {
       token: string
       name: string
       email: string
       venueManager: boolean
     }) => {
-      // store token
       localStorage.setItem('token', authData.token)
-  
-      // fetch full profile (including avatar) from backend
       const fresh = await profilesApi.getProfile(authData.name)
-      // if your backend login endpoint also returns avatar, you could merge here
       const u: User = {
-        name: authData.name,
-        email: authData.email,
-        venueManager: authData.venueManager,
-        avatar: fresh.avatar,
+        name: fresh.name,
+        email: fresh.email,
+        venueManager: fresh.venueManager,
+        avatar: fresh.avatar?.url,
       }
-  
       setUser(u)
       localStorage.setItem('user', JSON.stringify(u))
     }
@@ -100,17 +99,26 @@ import React, {
       window.location.href = `/login?next=${encodeURIComponent(next)}`
     }
   
-    // —— new method for avatar updates ——
+    // —— corrected avatar update ——  
     const updateProfileAvatar = async (newUrl: string) => {
       if (!user) throw new Error('Not authenticated')
-      // call your API to update avatar on server
-      const updated = await profilesApi.updateProfileAvatar(
+  
+      // 1) Call API with both username and new URL
+      const updatedProfile = await profilesApi.updateProfileAvatar(
         user.name,
         newUrl
       )
-      // updated should include the new avatar property
-      setUser(updated)
-      localStorage.setItem('user', JSON.stringify(updated))
+      // updatedProfile.avatar is { url: string; alt?: string }
+  
+      // 2) Extract the URL string and merge into your User shape
+      const newUser: User = {
+        ...user,
+        avatar: updatedProfile.avatar.url,
+      }
+  
+      // 3) Persist in state and localStorage
+      setUser(newUser)
+      localStorage.setItem('user', JSON.stringify(newUser))
     }
   
     return (
@@ -121,7 +129,7 @@ import React, {
           login,
           logout,
           redirectToLogin,
-          updateProfileAvatar, // now guaranteed
+          updateProfileAvatar,
         }}
       >
         {children}

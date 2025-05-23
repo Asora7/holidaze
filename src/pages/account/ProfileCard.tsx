@@ -36,13 +36,13 @@ export default function ProfileCard({
       onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
     >
       <Card.Body className="d-flex flex-column align-items-center p-4">
-        <Image
-          src={profile.avatar || '/images/avatar-placeholder.png'}
-          roundedCircle
-          width={128}
-          height={128}
-          className="mb-3 border"
-        />
+      <Image
+       src={avatarUrl || profile.avatar || '/images/avatar-placeholder.png'}
+       roundedCircle
+       width={128}
+       height={128}
+       className="mb-3 border"
+       />
 
         {!editing ? (
           <Button
