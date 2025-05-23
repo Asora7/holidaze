@@ -43,31 +43,28 @@ export default function VenueDetails() {
 
   return (
     <Container className="my-5">
-      <Row>
+      {/* Move the title above the row so the columns start at the carousel level */}
+      <h1 className="mb-4">{venue.name}</h1>
+
+      <Row className="align-items-start gy-4">
         {/* ————————————— Left column ————————————— */}
         <Col lg={8}>
-          <h1 className="mb-3">{venue.name}</h1>
-          <Carousel
-  controls
-  indicators
-  className="rounded-4 shadow-sm mb-4"
->
-  {venue.media?.map((m: any, i: number) => (
-    <Carousel.Item key={i}>
-      <img
-        className="d-block w-100 rounded-4"
-        style={{
-          height: '400px',
-          objectFit: 'cover',
-          borderRadius: '1rem',  // match Bootstrap’s rounded-4
-        }}
-        src={m.url}
-        alt={`${venue.name} ${i + 1}`}
-      />
-    </Carousel.Item>
-  ))}
-</Carousel>
-
+          <Carousel controls indicators className="rounded-4 shadow-sm mb-4">
+            {venue.media?.map((m: any, i: number) => (
+              <Carousel.Item key={i}>
+                <img
+                  className="d-block w-100 rounded-4"
+                  style={{
+                    height: '400px',
+                    objectFit: 'cover',
+                    borderRadius: '1rem', // match Bootstrap’s rounded-4
+                  }}
+                  src={m.url}
+                  alt={`${venue.name} ${i + 1}`}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
 
           <Row className="mb-4 text-muted">
             <Col>
@@ -78,14 +75,14 @@ export default function VenueDetails() {
             </Col>
           </Row>
 
-          <Card className="mb-4">
+          <Card className="mb-4 rounded-4 shadow-sm border-0">
             <Card.Body>
               <Card.Title>Description</Card.Title>
               <Card.Text>{venue.description}</Card.Text>
             </Card.Body>
           </Card>
 
-          <Card className="mb-4">
+          <Card className="mb-4 rounded-4 shadow-sm border-0">
             <Card.Body>
               <Card.Title>Facilities</Card.Title>
               <ul className="list-unstyled mb-0">
@@ -124,7 +121,7 @@ export default function VenueDetails() {
 
         {/* ————————————— Right column ————————————— */}
         <Col lg={4}>
-          <Card className="p-4 shadow-sm sticky-top" style={{ top: '80px' }}>
+          <Card className="p-4 rounded-4 shadow-sm sticky-top">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <h4 className="mb-1">
