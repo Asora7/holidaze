@@ -17,20 +17,6 @@ const FooterContainer = styled.footer`
   gap: 2rem; /* bump from 0.5rem → 1rem */
 `
 
-/** Links: Poppins 16px, 400, 0.5px tracking, primary green */
-const FooterLink = styled.a`
-  font-family: var(--font-sans);
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  color: var(--bs-primary);
-  text-decoration: none;
-
-  &:hover {
-    color: #1e473f;
-  }
-`
-
 /** Copyright text: same body-text style */
 const FooterText = styled.p`
   font-family: var(--font-sans);
