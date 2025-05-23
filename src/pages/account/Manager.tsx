@@ -1,7 +1,14 @@
 // src/pages/account/Manager.tsx
-
 import { useEffect, useState } from 'react'
-import { Container, Row, Col, Button, Card, Spinner } from 'react-bootstrap'
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Card,
+  Spinner,
+  Modal
+} from 'react-bootstrap'
 import { useAuth } from '../../auth/AuthContext'
 import { getProfileVenues } from '../../api/profilesApi'
 import { format, parseISO } from 'date-fns'
@@ -10,14 +17,17 @@ import ProfileCard from './ProfileCard'
 
 export default function ManagerAccount() {
   const { user, updateProfileAvatar } = useAuth()
-  const [venues, setVenues] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
+  const [venues, setVenues]           = useState<any[]>([])
+  const [loading, setLoading]         = useState(true)
 
-  // keep local edit of the avatar URL
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || '')
+  // Modal state: null = create, or the venue object = edit
+  const [activeVenue, setActiveVenue] = useState<any | null>(null)
+  const [showModal, setShowModal]     = useState(false)
 
-  // load venues on mount / user change
+  // Keep a local copy of the avatar URL while editing
+  const [avatarUrl, setAvatarUrl]     = useState(user?.avatar || '')
+
+  // Fetch venues on mount / user change
   useEffect(() => {
     if (!user) return
     setLoading(true)
@@ -28,140 +38,156 @@ export default function ManagerAccount() {
   }, [user])
 
   if (!user) return null
-  if (loading)
+
+  if (loading) {
     return (
-      <Container className="py-4">
+      <Container className="py-4 text-center">
         <Spinner animation="border" />
       </Container>
     )
-
-  // flatten all bookings so we can list them in one card
-  const allBookings = venues.flatMap(v =>
-    v.bookings.map((b: any) => ({ ...b, venue: v }))
-  )
-
-  // callback for saving avatar
-  const handleSaveAvatar = () => {
-    updateProfileAvatar(avatarUrl).catch(console.error)
   }
+
+  // Refresh helper
+  const refresh = () => getProfileVenues(user.name).then(setVenues)
 
   return (
     <Container className="py-4">
       <Row className="gy-4">
-        {/* ←—— Left column: your existing ProfileCard */}
+        {/* ←— Left column: ProfileCard */}
         <Col md={4} lg={3} className="position-sticky" style={{ top: '1rem' }}>
           <ProfileCard
             profile={{
-              name: user.name,
+              name:  user.name,
               email: user.email,
-              avatar: user.avatar,
+              avatar:user.avatar
             }}
             avatarUrl={avatarUrl}
             onAvatarChange={setAvatarUrl}
-            onSaveAvatar={handleSaveAvatar}
+            onSaveAvatar={() => updateProfileAvatar(avatarUrl)}
           />
         </Col>
 
-        {/* ——→ Right column: manager content */}
+        {/* —→ Right column: manager dashboard */}
         <Col lg={8}>
-          {/* header + new-venue button */}
+          {/* Header + New venue button */}
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <Button onClick={() => setShowForm(true)}>+ New venue</Button>
+            <Button
+              onClick={() => {
+                setActiveVenue(null)  // clear for “create” mode
+                setShowModal(true)
+              }}
+            >
+              + New venue
+            </Button>
           </div>
 
-          {/* venue creation form */}
-          {showForm && (
-            <VenueForm
-              onCreated={() => {
-                setShowForm(false)
-                getProfileVenues(user.name).then(setVenues)
-              }}
-              onCancel={() => setShowForm(false)}
-            />
-          )}
-
-          {/* two-card grid: My Venues + Upcoming Bookings */}
-          <Row>
-            {/* My Venues */}
-            <Col md={6}>
-              <Card className="mb-4 shadow-sm">
-                <Card.Body>
-                  <Card.Title>My Venues</Card.Title>
-                  {venues.length === 0 ? (
-                    <p>You haven’t created any venues yet.</p>
-                  ) : (
-                    venues.map(v => (
-                      <div
-                        key={v.id}
-                        className="d-flex justify-content-between align-items-center py-2 border-bottom"
-                      >
-                        <div className="d-flex align-items-center">
-                          <img
-                            src={v.pictureUrl}
-                            alt={v.name}
-                            className="rounded me-3"
-                            style={{ width: 48, height: 48, objectFit: 'cover' }}
-                          />
-                          <div>
-                            <div>{v.name}</div>
-                            <small className="text-muted">
-                              {v.location.city}, {v.location.country}
-                            </small>
-                          </div>
-                        </div>
-                        <div>
-                          <Button size="sm" variant="outline-secondary" className="me-2">
-                            Edit
-                          </Button>
-                          <Button size="sm" variant="danger">
-                            Delete
-                          </Button>
-                        </div>
+          {/* “My Venues” list */}
+          <Card className="mb-4 shadow-sm">
+            <Card.Body>
+              <Card.Title>My Venues</Card.Title>
+              {venues.length === 0 ? (
+                <p>You haven’t created any venues yet.</p>
+              ) : (
+                venues.map(v => (
+                  <div
+                    key={v.id}
+                    className="d-flex justify-content-between align-items-center py-2 border-bottom"
+                  >
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={v.pictureUrl}
+                        alt={v.name}
+                        className="rounded me-3"
+                        style={{ width: 48, height: 48, objectFit: 'cover' }}
+                      />
+                      <div>
+                        <div>{v.name}</div>
+                        <small className="text-muted">
+                          {v.location.city}, {v.location.country}
+                        </small>
                       </div>
-                    ))
-                  )}
-                </Card.Body>
-              </Card>
-            </Col>
-
-            {/* Upcoming Bookings */}
-            <Col md={6}>
-              <Card className="mb-4 shadow-sm">
-                <Card.Body>
-                  <Card.Title>Upcoming Bookings</Card.Title>
-                  {allBookings.length === 0 ? (
-                    <p>No upcoming bookings.</p>
-                  ) : (
-                    allBookings.map(b => (
-                      <div
-                        key={b.id}
-                        className="d-flex align-items-center py-2 border-bottom"
+                    </div>
+                    <div>
+                      <Button
+                        size="sm"
+                        variant="outline-secondary"
+                        className="me-2"
+                        onClick={() => {
+                          setActiveVenue(v)  // load into form for editing
+                          setShowModal(true)
+                        }}
                       >
-                        <img
-                          src={b.venue.pictureUrl}
-                          alt={b.venue.name}
-                          className="rounded me-3"
-                          style={{ width: 48, height: 48, objectFit: 'cover' }}
-                        />
-                        <div>
-                          <div>{b.venue.name}</div>
-                          <small className="text-muted d-block">
-                            {format(parseISO(b.dateFrom), 'MMM d, yyyy')} –{' '}
-                            {format(parseISO(b.dateTo), 'MMM d, yyyy')}
-                          </small>
-                          <small className="text-muted">
-                            {b.guests} guest{b.guests > 1 ? 's' : ''}
-                          </small>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="danger">
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </Card.Body>
+          </Card>
+
+          {/* “Upcoming Bookings” */}
+          <Card className="mb-4 shadow-sm">
+            <Card.Body>
+              <Card.Title>Upcoming Bookings</Card.Title>
+              {venues
+                .flatMap(v => v.bookings.map((b: any) => ({ ...b, venue: v })))
+                .map(b => (
+                  <div
+                    key={b.id}
+                    className="d-flex align-items-center py-2 border-bottom"
+                  >
+                    <img
+                      src={b.venue.pictureUrl}
+                      alt={b.venue.name}
+                      className="rounded me-3"
+                      style={{ width: 48, height: 48, objectFit: 'cover' }}
+                    />
+                    <div>
+                      <div>{b.venue.name}</div>
+                      <small className="text-muted d-block">
+                        {format(parseISO(b.dateFrom), 'MMM d, yyyy')} –{' '}
+                        {format(parseISO(b.dateTo), 'MMM d, yyyy')}
+                      </small>
+                      <small className="text-muted">
+                        {b.guests} guest{b.guests > 1 ? 's' : ''}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              {venues.flatMap(v => v.bookings).length === 0 && (
+                <p>No upcoming bookings.</p>
+              )}
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
+
+      {/* Modal for both Create & Edit */}
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {activeVenue ? 'Edit Venue' : 'Create Venue'}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <VenueForm
+            venue={activeVenue || undefined}
+            onSaved={() => {
+              setShowModal(false)
+              refresh()
+            }}
+            onCancel={() => setShowModal(false)}
+          />
+        </Modal.Body>
+      </Modal>
     </Container>
   )
 }

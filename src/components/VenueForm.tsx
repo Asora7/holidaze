@@ -1,188 +1,206 @@
-// components/VenueForm.tsx
-import React, { useState } from "react"
+// src/components/VenueForm.tsx
+import React, { useState, useEffect } from "react"
 import { Card, Form, Row, Col, Button, Spinner } from "react-bootstrap"
-import { createVenue } from "../api/venuesApi"
+import { createVenue, updateVenue } from "../api/venuesApi"
 
 interface Props {
-  onCreated: () => void
+  /** pass a full venue object for Edit, or undefined for Create */
+  venue?: any
+  /** called after successful create _or_ update */
+  onSaved: () => void
   onCancel: () => void
 }
 
-export default function VenueForm({ onCreated, onCancel }: Props) {
-  const [name, setName]               = useState("")
-  const [imageUrl, setImageUrl]       = useState("")
-  const [price, setPrice]             = useState<number>(0)
-  const [city, setCity]               = useState("")
-  const [maxGuests, setMaxGuests]     = useState<number>(1)
-  const [description, setDescription] = useState("")
-  const [wifi, setWifi]               = useState(false)
-  const [parking, setParking]         = useState(false)
-  const [breakfast, setBreakfast]     = useState(false)
-  const [pets, setPets]               = useState(false)
+export default function VenueForm({ venue, onSaved, onCancel }: Props) {
+  const [name, setName]               = useState(venue?.name || "")
+  const [imageUrl, setImageUrl]       = useState(venue?.media?.[0]?.url || "")
+  const [price, setPrice]             = useState<number>(venue?.price || 0)
+  const [city, setCity]               = useState(venue?.location?.city || "")
+  const [maxGuests, setMaxGuests]     = useState<number>(venue?.maxGuests || 1)
+  const [description, setDescription] = useState(venue?.description || "")
+  const [wifi, setWifi]               = useState(venue?.meta?.wifi || false)
+  const [parking, setParking]         = useState(venue?.meta?.parking || false)
+  const [breakfast, setBreakfast]     = useState(venue?.meta?.breakfast || false)
+  const [pets, setPets]               = useState(venue?.meta?.pets || false)
   const [submitting, setSubmitting]   = useState(false)
+
+  // If the passed-in venue changes, re-populate the form
+  useEffect(() => {
+    if (venue) {
+      setName(venue.name)
+      setImageUrl(venue.media?.[0]?.url || "")
+      setPrice(venue.price)
+      setCity(venue.location.city)
+      setMaxGuests(venue.maxGuests)
+      setDescription(venue.description)
+      setWifi(venue.meta?.wifi || false)
+      setParking(venue.meta?.parking || false)
+      setBreakfast(venue.meta?.breakfast || false)
+      setPets(venue.meta?.pets || false)
+    }
+  }, [venue])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+
+    const payload = {
+      name,
+      description,
+      media: imageUrl ? [{ url: imageUrl }] : [],
+      price,
+      maxGuests,
+      meta: { wifi, parking, breakfast, pets },
+      location: { city },
+    }
+
     try {
-      await createVenue({
-        name,
-        description,
-        media: imageUrl ? [{ url: imageUrl }] : [],
-        price,
-        maxGuests,
-        meta: { wifi, parking, breakfast, pets },
-        location: { city },
-      })
-      onCreated()
+      if (venue?.id) {
+        await updateVenue(venue.id, payload)
+      } else {
+        await createVenue(payload)
+      }
+      onSaved()
     } catch (err: any) {
-      alert("Failed to create venue: " + err.message)
+      alert(`Failed to ${venue?.id ? "update" : "create"} venue: ${err.message}`)
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <Row className="justify-content-center mb-4">
-      <Col lg={6} md={8}>
-        <Card className="shadow-sm rounded-3">
-          <Card.Body>
-            <Card.Title className="mb-4">Create Venue</Card.Title>
+    <Card className="shadow-sm rounded-3">
+      <Card.Body>
+        <Card.Title className="mb-4">
+          {venue ? "Edit Venue" : "Create Venue"}
+        </Card.Title>
 
-            <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit}>
+          {/* Name */}
+          <Form.Group className="mb-3" controlId="venueName">
+            <Form.Label>Name</Form.Label>
+            <Form.Control 
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+            />
+          </Form.Group>
 
-              {/* Name */}
-              <Form.Group className="mb-3" controlId="venueName">
-                <Form.Label>Name</Form.Label>
-                <Form.Control 
-                  type="text" 
-                  value={name} 
-                  onChange={e => setName(e.target.value)} 
-                  required 
-                  placeholder="Enter venue name"
-                />
-              </Form.Group>
+          {/* Image URL */}
+          <Form.Group className="mb-3" controlId="venueImage">
+            <Form.Label>Image URL</Form.Label>
+            <Form.Control 
+              type="url"
+              value={imageUrl}
+              onChange={e => setImageUrl(e.target.value)}
+            />
+          </Form.Group>
 
-              {/* Image URL */}
-              <Form.Group className="mb-3" controlId="venueImage">
-                <Form.Label>Image URL</Form.Label>
-                <Form.Control 
-                  type="url" 
-                  value={imageUrl} 
-                  onChange={e => setImageUrl(e.target.value)} 
-                  placeholder="https://example.com/photo.jpg"
-                />
-              </Form.Group>
-
-              {/* Price + City + Capacity */}
-              <Row className="g-3 mb-3">
-                <Col sm={4}>
-                  <Form.Group controlId="venuePrice">
-                    <Form.Label>Price</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={price}
-                      onChange={e => setPrice(+e.target.value)}
-                      required
-                      placeholder="€/night"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col sm={4}>
-                  <Form.Group controlId="venueCity">
-                    <Form.Label>City</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={city}
-                      onChange={e => setCity(e.target.value)}
-                      placeholder="City"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col sm={4}>
-                  <Form.Group controlId="venueGuests">
-                    <Form.Label>Capacity</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={maxGuests}
-                      onChange={e => setMaxGuests(+e.target.value)}
-                      required
-                      placeholder="Max guests"
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              {/* Amenities */}
-              <fieldset className="mb-3">
-                <Form.Label as="legend" column className="mb-2">
-                  Amenities
-                </Form.Label>
-                <Form.Check 
-                  type="checkbox"
-                  id="amenityWifi"
-                  label="Free wifi"
-                  checked={wifi}
-                  onChange={() => setWifi(!wifi)}
-                />
-                <Form.Check 
-                  type="checkbox"
-                  id="amenityParking"
-                  label="Free parking"
-                  checked={parking}
-                  onChange={() => setParking(!parking)}
-                />
-                <Form.Check 
-                  type="checkbox"
-                  id="amenityBreakfast"
-                  label="Breakfast"
-                  checked={breakfast}
-                  onChange={() => setBreakfast(!breakfast)}
-                />
-                <Form.Check 
-                  type="checkbox"
-                  id="amenityPets"
-                  label="Pets allowed"
-                  checked={pets}
-                  onChange={() => setPets(!pets)}
-                />
-              </fieldset>
-
-              {/* Description */}
-              <Form.Group className="mb-4" controlId="venueDescription">
-                <Form.Label>Description</Form.Label>
+          {/* Price / City / Capacity */}
+          <Row className="g-3 mb-3">
+            <Col sm={4}>
+              <Form.Group controlId="venuePrice">
+                <Form.Label>Price</Form.Label>
                 <Form.Control
-                  as="textarea"
-                  rows={4}
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
+                  type="number"
+                  value={price}
+                  onChange={e => setPrice(+e.target.value)}
+                  required
                 />
               </Form.Group>
+            </Col>
+            <Col sm={4}>
+              <Form.Group controlId="venueCity">
+                <Form.Label>City</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={city}
+                  onChange={e => setCity(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col sm={4}>
+              <Form.Group controlId="venueGuests">
+                <Form.Label>Capacity</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={maxGuests}
+                  onChange={e => setMaxGuests(+e.target.value)}
+                  required
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-              {/* Buttons */}
-              <div className="d-flex justify-content-end">
-                <Button 
-                  variant="secondary" 
-                  className="me-2" 
-                  onClick={onCancel}
-                  disabled={submitting}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  variant="primary"
-                  disabled={submitting}
-                >
-                  {submitting 
-                    ? <><Spinner as="span" animation="border" size="sm" /> Creating…</> 
-                    : "Create"}
-                </Button>
-              </div>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
+          {/* Amenities */}
+          <fieldset className="mb-3">
+            <Form.Label as="legend" column className="mb-2">
+              Amenities
+            </Form.Label>
+            <Form.Check
+              type="checkbox"
+              id="amenityWifi"
+              label="Free wifi"
+              checked={wifi}
+              onChange={() => setWifi(!wifi)}
+            />
+            <Form.Check
+              type="checkbox"
+              id="amenityParking"
+              label="Free parking"
+              checked={parking}
+              onChange={() => setParking(!parking)}
+            />
+            <Form.Check
+              type="checkbox"
+              id="amenityBreakfast"
+              label="Breakfast"
+              checked={breakfast}
+              onChange={() => setBreakfast(!breakfast)}
+            />
+            <Form.Check
+              type="checkbox"
+              id="amenityPets"
+              label="Pets allowed"
+              checked={pets}
+              onChange={() => setPets(!pets)}
+            />
+          </fieldset>
+
+          {/* Description */}
+          <Form.Group className="mb-4" controlId="venueDescription">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={4}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+            />
+          </Form.Group>
+
+          {/* Buttons */}
+          <div className="d-flex justify-content-end">
+            <Button
+              variant="secondary"
+              className="me-2"
+              onClick={onCancel}
+              disabled={submitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={submitting}
+            >
+              {submitting
+                ? <><Spinner as="span" animation="border" size="sm" /> Saving…</>
+                : venue ? "Save changes" : "Create"}
+            </Button>
+          </div>
+        </Form>
+      </Card.Body>
+    </Card>
   )
 }
