@@ -8,7 +8,7 @@ import FilterDropdown, { FILTER_OPTIONS } from '../components/Home/FilterDropdow
 import VenueGrid from '../components/VenueGrid';
 import { fetchAllVenues } from '../api/venuesApi';
 
-const DESTINATIONS = ['Oslo', 'Amsterdam', 'Thailand', 'Spain'];
+const DESTINATIONS = ['Oslo', 'Italy', 'Australia', 'Spain'];
 const PAGE_SIZE    = 9; // number of venues to show per “page”
 
 export default function Home() {
@@ -37,7 +37,8 @@ export default function Home() {
           const nameMatch = v.name?.toLowerCase().includes(q);
           const descMatch = v.description?.toLowerCase().includes(q);
           const cityMatch = v.location?.city?.toLowerCase().includes(q);
-          return nameMatch || descMatch || cityMatch;
+          const countryMatch = v.location?.country?.toLowerCase().includes(q)
+          return nameMatch || descMatch || cityMatch || countryMatch;
         });
         setVenues(filtered);
         setItemsToShow(PAGE_SIZE); // reset to first “page”

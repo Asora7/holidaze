@@ -4,15 +4,15 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 
 import allImg   from '../../assets/images/all.jpg';
 import osloImg  from '../../assets/images/oslo.jpg';
-import amsImg   from '../../assets/images/amsterdam.jpg';
-import thaiImg  from '../../assets/images/thailand.jpg';
+import italyImg   from '../../assets/images/italy.jpg';
+import austImg  from '../../assets/images/australia.jpg';
 import spainImg from '../../assets/images/spain.jpg';
 
 const IMAGE_MAP: Record<string,string> = {
   all:       allImg,
   oslo:      osloImg,
-  amsterdam: amsImg,
-  thailand:  thaiImg,
+  italy:    italyImg,
+  australia:  austImg,
   spain:     spainImg,
 };
 
