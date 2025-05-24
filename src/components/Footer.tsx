@@ -8,7 +8,7 @@ import styled from 'styled-components'
 const FooterContainer = styled.footer`
   background: #ffffff;
   border-top: 1px solid #e6e6e6; 
-  padding: 3rem 0;               
+  padding: 3rem 0;            
 
   /* center everything and stack vertically */
   display: flex;

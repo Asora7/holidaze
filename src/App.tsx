@@ -1,17 +1,32 @@
 // src/App.tsx
-import { ToastContainer } from "react-toastify";
-import AppRoutes from "./routes/AppRoutes";
+import styled from 'styled-components'
+import { ToastContainer } from 'react-toastify'
+import AppRoutes from './routes/AppRoutes'
+
+const Page = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;   /* full‐viewport wrapper */
+`
+
+const Main = styled.main`
+  flex: 1;             /* take up all available space */
+`
 
 export default function App() {
   return (
-    <>
-      {/* This is where all your toasts will show up */}
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000} 
+    <Page>
+      {/* Toasts sit in portal, but must be declared up here */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
         hideProgressBar={false}
       />
-      <AppRoutes />
-    </>
-  );
+
+      {/* Your header + content */}
+      <Main>
+        <AppRoutes />
+      </Main>
+    </Page>
+)
 }

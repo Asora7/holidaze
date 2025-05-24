@@ -72,12 +72,10 @@ export default function CustomerAccount() {
         <Row className="g-4">
           {/* — PROFILE SIDEBAR — */}
           <Col md={4} lg={3}>
-            <ProfileCard
-              profile={profile}
-              avatarUrl={avatarUrl}
-              onAvatarChange={setAvatarUrl}
-              onSaveAvatar={handleSaveAvatar}
-            />
+          <ProfileCard
+          profile={profile}
+          onSaveAvatar={handleSaveAvatar}
+          />
           </Col>
 
           {/* — BOOKINGS STACKED CARDS — */}
