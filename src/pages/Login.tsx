@@ -60,7 +60,7 @@ export default function Login() {
       });
 
       // 1) Save token & user info (including venueManager flag)
-      login({
+      await login({
         token: data.accessToken,
         name: data.name,
         email: data.email,
