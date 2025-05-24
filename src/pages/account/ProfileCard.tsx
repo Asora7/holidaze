@@ -3,7 +3,13 @@ import { useState, useEffect } from 'react'
 import { Card, Button, Form, Spinner, Image, Stack } from 'react-bootstrap'
 
 interface ProfileCardProps {
-  profile: { id: string; name: string; email: string; avatar?: string }
+  profile: {
+    id: string
+    name: string
+    email: string
+    avatar?: string
+    accountType?: 'customer' | 'venue_manager'
+  }
   onAvatarChange?: (url: string) => void  // optional callback
   onSaveAvatar?: (url: string) => void    // optional callback
 }
@@ -14,7 +20,7 @@ export default function ProfileCard({
   onSaveAvatar,
 }: ProfileCardProps) {
   const [avatarUrl, setAvatarUrl] = useState<string>('')
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing]     = useState(false)
 
   // Load from localStorage (or fallback to profile.avatar) once
   useEffect(() => {
@@ -46,6 +52,11 @@ export default function ProfileCard({
     )
   }
 
+  // Convert the raw accountType into a friendly label:
+  const accountLabel = profile.accountType === 'venue_manager'
+    ? 'Venue Manager'
+    : 'Customer'
+
   return (
     <Card
       className="h-100 shadow-sm"
@@ -59,14 +70,14 @@ export default function ProfileCard({
           roundedCircle
           width={128}
           height={128}
-          className="mb-3 border"
+          className="mb-5 border"
         />
 
         {!editing ? (
           <Button
             variant="outline-secondary"
             size="sm"
-            className="w-50 mb-3"
+            className="w-50 mb-4"
             onClick={() => setEditing(true)}
           >
             Edit
@@ -75,15 +86,18 @@ export default function ProfileCard({
           <Button
             variant="outline-secondary"
             size="sm"
-            className="w-50 mb-3"
+            className="w-50 mb-4"
             onClick={() => setEditing(false)}
           >
             Cancel
           </Button>
         )}
 
-        <Card.Title className="mb-1">{profile.name}</Card.Title>
-        <Card.Text className="text-muted mb-3">{profile.email}</Card.Text>
+        <Card.Title className="mb-4">{profile.name}</Card.Title>
+        <Card.Text className="text-muted mb-4">{profile.email}</Card.Text>
+        <Card.Text className="text-muted mb-5">
+          <strong>Account Type:</strong> {accountLabel}
+        </Card.Text>
 
         {editing && (
           <Form className="w-100 mt-3">

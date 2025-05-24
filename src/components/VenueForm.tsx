@@ -23,8 +23,9 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
   const [breakfast, setBreakfast]     = useState(venue?.meta?.breakfast || false)
   const [pets, setPets]               = useState(venue?.meta?.pets || false)
   const [submitting, setSubmitting]   = useState(false)
+  const [validated, setValidated]     = useState(false)
 
-  // If the passed-in venue changes, re-populate the form
+  // Re-populate form when `venue` changes
   useEffect(() => {
     if (venue) {
       setName(venue.name)
@@ -40,10 +41,16 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
     }
   }, [venue])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmitting(true)
+    const form = e.currentTarget
+    if (!form.checkValidity()) {
+      e.stopPropagation()
+      setValidated(true)
+      return
+    }
 
+    setSubmitting(true)
     const payload = {
       name,
       description,
@@ -75,7 +82,7 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
           {venue ? "Edit Venue" : "Create Venue"}
         </Card.Title>
 
-        <Form onSubmit={handleSubmit}>
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
           {/* Name */}
           <Form.Group className="mb-3" controlId="venueName">
             <Form.Label>Name</Form.Label>
@@ -85,6 +92,9 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
               onChange={e => setName(e.target.value)}
               required
             />
+            <Form.Control.Feedback type="invalid">
+              Please enter a name.
+            </Form.Control.Feedback>
           </Form.Group>
 
           {/* Image URL */}
@@ -94,7 +104,11 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
               type="url"
               value={imageUrl}
               onChange={e => setImageUrl(e.target.value)}
+              required
             />
+            <Form.Control.Feedback type="invalid">
+              Please provide a valid image URL.
+            </Form.Control.Feedback>
           </Form.Group>
 
           {/* Price / City / Capacity */}
@@ -108,6 +122,9 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
                   onChange={e => setPrice(+e.target.value)}
                   required
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please enter a price.
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col sm={4}>
@@ -117,7 +134,11 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
                   type="text"
                   value={city}
                   onChange={e => setCity(e.target.value)}
+                  required
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please enter a city.
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col sm={4}>
@@ -129,6 +150,9 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
                   onChange={e => setMaxGuests(+e.target.value)}
                   required
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please enter the maximum number of guests.
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -176,7 +200,11 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
               rows={4}
               value={description}
               onChange={e => setDescription(e.target.value)}
+              required
             />
+            <Form.Control.Feedback type="invalid">
+              Please enter a description.
+            </Form.Control.Feedback>
           </Form.Group>
 
           {/* Buttons */}
@@ -190,20 +218,19 @@ export default function VenueForm({ venue, onSaved, onCancel }: Props) {
               Cancel
             </Button>
             <Button
-  type="submit"
-  disabled={submitting}
-  style={{
-    backgroundColor: 'var(--bs-secondary)',
-    borderColor:     'var(--bs-secondary)',
-    color:           '#000',
-    fontWeight:      600,
-  }}
->
-  {submitting
-    ? <><Spinner as="span" animation="border" size="sm" /> Saving…</>
-    : venue ? "Save changes" : "Create"}
-</Button>
-
+              type="submit"
+              disabled={submitting}
+              style={{
+                backgroundColor: 'var(--bs-secondary)',
+                borderColor:     'var(--bs-secondary)',
+                color:           '#000',
+                fontWeight:      600,
+              }}
+            >
+              {submitting
+                ? <><Spinner as="span" animation="border" size="sm" /> Saving…</>
+                : venue ? "Save changes" : "Create"}
+            </Button>
           </div>
         </Form>
       </Card.Body>
