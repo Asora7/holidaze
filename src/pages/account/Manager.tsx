@@ -58,6 +58,7 @@ export default function ManagerAccount() {
         <Col md={4} lg={3} className="position-sticky" style={{ top: '1rem' }}>
           <ProfileCard
             profile={{
+              id:     user.name,
               name:  user.name,
               email: user.email,
               avatar:user.avatar

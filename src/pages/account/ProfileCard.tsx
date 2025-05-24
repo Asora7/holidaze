@@ -10,19 +10,21 @@ interface ProfileCardProps {
     avatar?: string
     accountType?: 'customer' | 'venue_manager'
   }
+  avatarUrl?: string                      // ← lagt til
   onAvatarChange?: (url: string) => void  // optional callback
   onSaveAvatar?: (url: string) => void    // optional callback
 }
 
 export default function ProfileCard({
   profile,
+  avatarUrl: initialAvatarUrl = '',       // ← destrukturerer inn initial prop
   onAvatarChange,
   onSaveAvatar,
 }: ProfileCardProps) {
-  const [avatarUrl, setAvatarUrl] = useState<string>('')
+  const [avatarUrl, setAvatarUrl] = useState<string>(initialAvatarUrl)
   const [editing, setEditing]     = useState(false)
 
-  // Load from localStorage (or fallback to profile.avatar) once
+  // Load from localStorage (eller fallback til profile.avatar) én gang
   useEffect(() => {
     const key = `avatarUrl_${profile.id}`
     const saved = localStorage.getItem(key)
@@ -52,7 +54,6 @@ export default function ProfileCard({
     )
   }
 
-  // Convert the raw accountType into a friendly label:
   const accountLabel = profile.accountType === 'venue_manager'
     ? 'Venue Manager'
     : 'Customer'
