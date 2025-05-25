@@ -1,9 +1,7 @@
-// src/pages/VenueDetails.tsx
-
-import { useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { fetchVenueById } from '../api/venuesApi'
-import DateSelector from '../components/DateSelector'
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { fetchVenueById } from "../api/venuesApi";
+import DateSelector from "../components/DateSelector";
 
 import {
   Container,
@@ -13,41 +11,38 @@ import {
   Card,
   Badge,
   Spinner,
-} from 'react-bootstrap'
-import { StarFill, PeopleFill } from 'react-bootstrap-icons'
+} from "react-bootstrap";
+import { StarFill, PeopleFill } from "react-bootstrap-icons";
 
 export default function VenueDetails() {
-  const { id } = useParams<{ id: string }>()
-  const [venue, setVenue] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const [venue, setVenue] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return
-    setLoading(true)
+    if (!id) return;
+    setLoading(true);
     fetchVenueById(id)
-      .then(data => setVenue(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false))
-  }, [id])
+      .then((data) => setVenue(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [id]);
 
   if (loading)
     return (
       <div className="d-flex justify-content-center my-5">
         <Spinner animation="border" />
       </div>
-    )
-  if (error)
-    return <p className="text-center text-danger my-5">{error}</p>
-  if (!venue) return <p className="text-center my-5">No venue found.</p>
+    );
+  if (error) return <p className="text-center text-danger my-5">{error}</p>;
+  if (!venue) return <p className="text-center my-5">No venue found.</p>;
 
   return (
     <Container className="my-5">
-      {/* Move the title above the row so the columns start at the carousel level */}
       <h1 className="mb-4">{venue.name}</h1>
 
       <Row className="align-items-start gy-4">
-        {/* ————————————— Left column ————————————— */}
         <Col lg={8}>
           <Carousel controls indicators className="rounded-4 shadow-sm mb-4">
             {venue.media?.map((m: any, i: number) => (
@@ -55,9 +50,9 @@ export default function VenueDetails() {
                 <img
                   className="d-block w-100 rounded-4"
                   style={{
-                    height: '400px',
-                    objectFit: 'cover',
-                    borderRadius: '1rem', // match Bootstrap’s rounded-4
+                    height: "400px",
+                    objectFit: "cover",
+                    borderRadius: "1rem",
                   }}
                   src={m.url}
                   alt={`${venue.name} ${i + 1}`}
@@ -119,14 +114,13 @@ export default function VenueDetails() {
           </Card>
         </Col>
 
-        {/* ————————————— Right column ————————————— */}
         <Col lg={4}>
           <Card className="p-4 rounded-4 shadow-sm sticky-top">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <h4 className="mb-1">
-                  ${venue.price}{' '}
-                  <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+                  ${venue.price}{" "}
+                  <small className="text-muted" style={{ fontSize: "0.75rem" }}>
                     per night
                   </small>
                 </h4>
@@ -149,5 +143,5 @@ export default function VenueDetails() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

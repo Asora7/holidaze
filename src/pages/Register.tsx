@@ -1,4 +1,3 @@
-// src/pages/Register.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
@@ -23,9 +22,7 @@ const Register: React.FC = () => {
   });
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
@@ -41,8 +38,7 @@ const Register: React.FC = () => {
       errs.email = "Must be a stud.noroff.no address";
     if (form.password.length < 8)
       errs.password = "Password must be ≥ 8 characters";
-    if (form.password !== form.confirm)
-      errs.confirm = "Passwords must match";
+    if (form.password !== form.confirm) errs.confirm = "Passwords must match";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -50,49 +46,40 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-  
+
     try {
-      // 1) Call registerUser and destructure the data
       const { data } = await registerUser({
         name: form.name,
         email: form.email,
         password: form.password,
         venueManager: form.venueManager,
       });
-  
-      // 2) Persist the token so you stay logged in
+
       localStorage.setItem("token", data.accessToken);
-  
-      // 3) Redirect to your protected area (e.g. dashboard or account)
+
       navigate("/login", {
         state: {
           justRegistered: true,
-          isManager: form.venueManager
-        }
+          isManager: form.venueManager,
+        },
       });
-  
     } catch (err: any) {
-      // handle API errors as before
       if (err.errors) setErrors(err.errors);
       else setErrors({ general: "Registration failed" });
     }
   };
-  
 
   return (
     <div className="container my-5">
       <div className="mx-auto" style={{ maxWidth: 480 }}>
         <h2 className="mb-4 text-center">Register</h2>
 
-        {/* Account Type Toggle */}
         <div className="btn-group mb-3 w-100">
           <button
             type="button"
             className={
               "btn " +
-              (!form.venueManager
-                ? "btn-warning"
-                : "btn-outline-secondary")
+              (!form.venueManager ? "btn-warning" : "btn-outline-secondary")
             }
             onClick={() => toggleAccountType(false)}
           >
@@ -102,9 +89,7 @@ const Register: React.FC = () => {
             type="button"
             className={
               "btn " +
-              (form.venueManager
-                ? "btn-warning"
-                : "btn-outline-secondary")
+              (form.venueManager ? "btn-warning" : "btn-outline-secondary")
             }
             onClick={() => toggleAccountType(true)}
           >
@@ -119,9 +104,7 @@ const Register: React.FC = () => {
 
         <form onSubmit={handleSubmit} noValidate>
           {errors.general && (
-            <div className="alert alert-danger">
-              {errors.general}
-            </div>
+            <div className="alert alert-danger">{errors.general}</div>
           )}
 
           <div className="mb-3">
@@ -130,15 +113,10 @@ const Register: React.FC = () => {
               name="name"
               value={form.name}
               onChange={handleChange}
-              className={
-                "form-control " +
-                (errors.name ? "is-invalid" : "")
-              }
+              className={"form-control " + (errors.name ? "is-invalid" : "")}
             />
             {errors.name && (
-              <div className="invalid-feedback">
-                {errors.name}
-              </div>
+              <div className="invalid-feedback">{errors.name}</div>
             )}
           </div>
 
@@ -149,15 +127,10 @@ const Register: React.FC = () => {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className={
-                "form-control " +
-                (errors.email ? "is-invalid" : "")
-              }
+              className={"form-control " + (errors.email ? "is-invalid" : "")}
             />
             {errors.email && (
-              <div className="invalid-feedback">
-                {errors.email}
-              </div>
+              <div className="invalid-feedback">{errors.email}</div>
             )}
           </div>
 
@@ -169,42 +142,29 @@ const Register: React.FC = () => {
               value={form.password}
               onChange={handleChange}
               className={
-                "form-control " +
-                (errors.password ? "is-invalid" : "")
+                "form-control " + (errors.password ? "is-invalid" : "")
               }
             />
             {errors.password && (
-              <div className="invalid-feedback">
-                {errors.password}
-              </div>
+              <div className="invalid-feedback">{errors.password}</div>
             )}
           </div>
 
           <div className="mb-4">
-            <label className="form-label">
-              Confirm Password
-            </label>
+            <label className="form-label">Confirm Password</label>
             <input
               type="password"
               name="confirm"
               value={form.confirm}
               onChange={handleChange}
-              className={
-                "form-control " +
-                (errors.confirm ? "is-invalid" : "")
-              }
+              className={"form-control " + (errors.confirm ? "is-invalid" : "")}
             />
             {errors.confirm && (
-              <div className="invalid-feedback">
-                {errors.confirm}
-              </div>
+              <div className="invalid-feedback">{errors.confirm}</div>
             )}
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-warning w-100"
-          >
+          <button type="submit" className="btn btn-warning w-100">
             Register
           </button>
         </form>

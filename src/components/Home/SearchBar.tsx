@@ -1,7 +1,6 @@
-// src/components/Home/SearchBar.tsx
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { Form, Button, Row, Col, Container } from 'react-bootstrap';
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { Form, Button, Row, Col, Container } from "react-bootstrap";
 
 interface SearchBarProps {
   onSearch?: (params: {
@@ -12,10 +11,10 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
-  const [where, setWhere]       = useState('');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate]     = useState('');
-  const [guests, setGuests]     = useState(1);
+  const [where, setWhere] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [guests, setGuests] = useState(1);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -30,21 +29,21 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
             <Form.Control
               placeholder="Where to?"
               value={where}
-              onChange={e => setWhere(e.target.value)}
+              onChange={(e) => setWhere(e.target.value)}
             />
           </Col>
           <Col md>
             <Form.Control
               type="date"
               value={fromDate}
-              onChange={e => setFromDate(e.target.value)}
+              onChange={(e) => setFromDate(e.target.value)}
             />
           </Col>
           <Col md>
             <Form.Control
               type="date"
               value={toDate}
-              onChange={e => setToDate(e.target.value)}
+              onChange={(e) => setToDate(e.target.value)}
             />
           </Col>
           <Col md="auto">
@@ -52,8 +51,8 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
               type="number"
               min={1}
               value={guests}
-              onChange={e => setGuests(+e.target.value)}
-              style={{ width: '80px' }}
+              onChange={(e) => setGuests(+e.target.value)}
+              style={{ width: "80px" }}
             />
           </Col>
           <Col md="auto">

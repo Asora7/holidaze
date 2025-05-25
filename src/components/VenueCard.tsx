@@ -1,6 +1,5 @@
-// src/components/VenueCard.tsx
-import { Card } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export interface Venue {
   id: string;
@@ -15,7 +14,7 @@ interface VenueCardProps {
 }
 
 export default function VenueCard({ venue }: VenueCardProps) {
-  const img = venue.media[0]?.url || '/placeholder.jpg';
+  const img = venue.media[0]?.url || "/placeholder.jpg";
   const alt = venue.media[0]?.alt || venue.name;
 
   return (
@@ -25,7 +24,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
           variant="top"
           src={img}
           alt={alt}
-          style={{ height: '200px', objectFit: 'cover' }}
+          style={{ height: "200px", objectFit: "cover" }}
         />
       </Link>
       <Card.Body>

@@ -1,8 +1,6 @@
-//api/profilesApi.ts
-// src/api/profilesApi.ts
-const BASE    = "https://v2.api.noroff.dev/holidaze";
+const BASE = "https://v2.api.noroff.dev/holidaze";
 const API_KEY = import.meta.env.VITE_API_KEY;
-const token   = () => localStorage.getItem("token")!;
+const token = () => localStorage.getItem("token")!;
 
 const headers = (isJSON = true): Record<string, string> => ({
   Authorization: `Bearer ${token()}`,
@@ -30,15 +28,12 @@ export async function updateProfileAvatar(username: string, avatarUrl: string) {
   return json.data;
 }
 
-/**
- * GET /holidaze/profiles/:username/venues?_bookings=true
- */
 export async function getProfileVenues(username: string): Promise<any[]> {
   const res = await fetch(
     `${BASE}/profiles/${encodeURIComponent(username)}/venues?_bookings=true`,
     {
-      headers: headers(), // JSON + auth
-    }
+      headers: headers(),
+    },
   );
   if (!res.ok) {
     throw new Error("Failed to load your venues");

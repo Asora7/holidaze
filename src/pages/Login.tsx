@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { loginUser } from "../api/auth";
@@ -22,7 +21,6 @@ export default function Login() {
   const { state } = useLocation() as { state?: LocationState };
   const { login } = useAuth();
 
-  // Show any “must be logged in” error or “just registered” toast
   const [initialError] = useState(state?.errorMessage);
   useEffect(() => {
     if (state?.justRegistered) {
@@ -34,13 +32,12 @@ export default function Login() {
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // client-side validation
     const errs: FieldErrors = {};
     if (!form.email.trim()) errs.email = "Email is required";
     else if (!form.email.includes("@stud.noroff.no"))
@@ -59,7 +56,6 @@ export default function Login() {
         password: form.password,
       });
 
-      // 1) Save token & user info (including venueManager flag)
       await login({
         token: data.accessToken,
         name: data.name,
@@ -67,10 +63,7 @@ export default function Login() {
         venueManager: data.venueManager,
       });
 
-      // 2) Redirect based on server-claimed role
-      const dest = data.venueManager
-        ? "/account/manager"
-        : "/account/customer";
+      const dest = data.venueManager ? "/account/manager" : "/account/customer";
       navigate(state?.from ?? dest);
     } catch {
       setErrors({ general: "Email or password is incorrect" });
@@ -83,9 +76,7 @@ export default function Login() {
         <h2 className="mb-4 text-center">Log in</h2>
 
         {initialError && (
-          <div className="alert alert-danger text-center">
-            {initialError}
-          </div>
+          <div className="alert alert-danger text-center">{initialError}</div>
         )}
 
         <form onSubmit={handleSubmit} noValidate>
@@ -103,9 +94,7 @@ export default function Login() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className={`form-control ${
-                errors.email ? "is-invalid" : ""
-              }`}
+              className={`form-control ${errors.email ? "is-invalid" : ""}`}
             />
             {errors.email && (
               <div className="invalid-feedback">{errors.email}</div>
@@ -122,9 +111,7 @@ export default function Login() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className={`form-control ${
-                errors.password ? "is-invalid" : ""
-              }`}
+              className={`form-control ${errors.password ? "is-invalid" : ""}`}
             />
             {errors.password && (
               <div className="invalid-feedback">{errors.password}</div>

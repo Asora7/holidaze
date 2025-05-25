@@ -1,48 +1,46 @@
-// src/pages/account/ProfileCard.tsx
-import { useState, useEffect } from 'react'
-import { Card, Button, Form, Spinner, Image, Stack } from 'react-bootstrap'
+import { useState, useEffect } from "react";
+import { Card, Button, Form, Spinner, Image, Stack } from "react-bootstrap";
 
 interface ProfileCardProps {
   profile: {
-    id: string
-    name: string
-    email: string
-    avatar?: string
-    accountType?: 'customer' | 'venue_manager'
-  }
-  avatarUrl?: string                      // ← lagt til
-  onAvatarChange?: (url: string) => void  // optional callback
-  onSaveAvatar?: (url: string) => void    // optional callback
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    accountType?: "customer" | "venue_manager";
+  };
+  avatarUrl?: string;
+  onAvatarChange?: (url: string) => void;
+  onSaveAvatar?: (url: string) => void;
 }
 
 export default function ProfileCard({
   profile,
-  avatarUrl: initialAvatarUrl = '',       // ← destrukturerer inn initial prop
+  avatarUrl: initialAvatarUrl = "",
   onAvatarChange,
   onSaveAvatar,
 }: ProfileCardProps) {
-  const [avatarUrl, setAvatarUrl] = useState<string>(initialAvatarUrl)
-  const [editing, setEditing]     = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string>(initialAvatarUrl);
+  const [editing, setEditing] = useState(false);
 
-  // Load from localStorage (eller fallback til profile.avatar) én gang
   useEffect(() => {
-    const key = `avatarUrl_${profile.id}`
-    const saved = localStorage.getItem(key)
+    const key = `avatarUrl_${profile.id}`;
+    const saved = localStorage.getItem(key);
     if (saved) {
-      setAvatarUrl(saved)
-      onAvatarChange?.(saved)
+      setAvatarUrl(saved);
+      onAvatarChange?.(saved);
     } else if (profile.avatar) {
-      setAvatarUrl(profile.avatar)
-      onAvatarChange?.(profile.avatar)
+      setAvatarUrl(profile.avatar);
+      onAvatarChange?.(profile.avatar);
     }
-  }, [profile.id, profile.avatar, onAvatarChange])
+  }, [profile.id, profile.avatar, onAvatarChange]);
 
   const handleSave = () => {
-    const key = `avatarUrl_${profile.id}`
-    localStorage.setItem(key, avatarUrl)
-    onSaveAvatar?.(avatarUrl)
-    setEditing(false)
-  }
+    const key = `avatarUrl_${profile.id}`;
+    localStorage.setItem(key, avatarUrl);
+    onSaveAvatar?.(avatarUrl);
+    setEditing(false);
+  };
 
   if (!profile) {
     return (
@@ -51,23 +49,24 @@ export default function ProfileCard({
           <Spinner animation="border" />
         </Card.Body>
       </Card>
-    )
+    );
   }
 
-  const accountLabel = profile.accountType === 'venue_manager'
-    ? 'Venue Manager'
-    : 'Customer'
+  const accountLabel =
+    profile.accountType === "venue_manager" ? "Venue Manager" : "Customer";
 
   return (
     <Card
       className="h-100 shadow-sm"
-      style={{ transition: 'transform .15s ease' }}
-      onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
-      onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
+      style={{ transition: "transform .15s ease" }}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.transform = "translateY(-2px)")
+      }
+      onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
     >
       <Card.Body className="d-flex flex-column align-items-center p-4">
         <Image
-          src={avatarUrl || '/images/avatar-placeholder.png'}
+          src={avatarUrl || "/images/avatar-placeholder.png"}
           roundedCircle
           width={128}
           height={128}
@@ -108,10 +107,14 @@ export default function ProfileCard({
                 type="url"
                 value={avatarUrl}
                 placeholder="https://…"
-                onChange={e => setAvatarUrl(e.currentTarget.value)}
+                onChange={(e) => setAvatarUrl(e.currentTarget.value)}
               />
             </Form.Group>
-            <Stack direction="horizontal" gap={2} className="justify-content-end">
+            <Stack
+              direction="horizontal"
+              gap={2}
+              className="justify-content-end"
+            >
               <Button
                 variant="outline-secondary"
                 size="sm"
@@ -131,5 +134,5 @@ export default function ProfileCard({
         )}
       </Card.Body>
     </Card>
-  )
+  );
 }
