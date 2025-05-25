@@ -1,6 +1,8 @@
 # Holidaze Front-End Application
 
-This repository contains the source code for the Holidaze accommodation booking application front-end. The application is built with React, TypeScript, and Bootstrap, and interacts with the official Holidaze API.
+Holidaze is a modern accommodation booking platform featuring two distinct user experiences: customers and venue managers. Customers can browse and search venues, view availability calendars, and manage their bookings, while venue managers can register, update, and delete venue listings and track incoming reservations.
+
+This repository contains the source code for the Holidaze front-end application, built with React, TypeScript, and Bootstrap, integrating with the official Holidaze API.
 
 ---
 
