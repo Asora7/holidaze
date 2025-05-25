@@ -1,6 +1,6 @@
 # Holidaze Front-End Application
 
-This repository contains the source code for the Holidaze accommodation booking application front-end. The application is built with React, TypeScript, and Tailwind CSS, and interacts with the official Holidaze API.
+This repository contains the source code for the Holidaze accommodation booking application front-end. The application is built with React, TypeScript, and Bootstrap, and interacts with the official Holidaze API.
 
 ---
 
