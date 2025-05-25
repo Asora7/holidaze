@@ -3,7 +3,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { useAuth } from '../auth/AuthContext'
-import Logo from '../assets/images/holidaze-logo.svg'
 
 // shared link/button styles
 const navItemStyles = css`
@@ -23,14 +22,20 @@ const navItemStyles = css`
   }
 `
 
-// a styled Link
 const NavLink = styled(Link)`
   ${navItemStyles}
 `
-
-// a styled button with the exact same look
 const NavButton = styled.button`
   ${navItemStyles}
+`
+
+// Logo image: fixed layout height but visually scaled
+const LogoImg = styled.img`
+  height: 32px;               /* Layout stays 32px tall */
+  width: auto;
+  transform: scale(4.5);      /* Visually 1.5× larger (≈48px) */
+  transform-origin: left center;
+  display: block;
 `
 
 export default function Navbar() {
@@ -43,23 +48,21 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white border-bottom">
-      <div className="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
-        {/* logo */}
+    <nav className="navbar navbar-expand-lg bg-white border-bottom navbar-taller">
+      <div className="container-fluid d-flex justify-content-between align-items-center">
+        {/* Brand: scaled SVG */}
         <Link to="/" className="navbar-brand p-0">
-          <img src={Logo} alt="Holidaze logo" height={96} />
+          <LogoImg src="/holidaze-logo.svg" alt="Holidaze logo" />
         </Link>
 
-        {/* wider gap between items */}
+        {/* Nav links */}
         <div className="d-flex gap-5 align-items-center">
           {isAuthenticated ? (
             <>
               <NavLink to={user!.venueManager ? "/account/manager" : "/account/customer"}>
                 My Account
               </NavLink>
-              <NavButton onClick={handleLogout}>
-                Log out
-              </NavButton>
+              <NavButton onClick={handleLogout}>Log out</NavButton>
             </>
           ) : (
             <>

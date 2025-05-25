@@ -1,33 +1,31 @@
-/* src/index.css */
-
-/* 1) Override Bootstrap’s primary color to your brand-green */
 :root {
   --bs-primary: #255e4c;
   --bs-secondary: #ffb703;
 
-  /* your font tokens */
   --font-sans: 'Poppins', sans-serif;
   --font-serif: 'Playfair Display', serif;
 }
 
-/* 2) Apply your root font-family */
 body {
   font-family: var(--font-sans);
   margin: 0;
 }
 
-/* Hero-specific serif style */
+.navbar-taller {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
 .hero-heading {
   font-family: var(--font-serif);
 }
 
 
-/* src/index.css (or App.css) */
 .hero-full {
   position: relative;
-  width: 100vw;                     /* full viewport width */
-  left: 50%;                        /* shift right by half its width */
+  width: 100vw;                     
+  left: 50%;                        
   right: 50%;
-  margin-left: -50vw;               /* bring it back to the left edge */
+  margin-left: -50vw;               
   margin-right: -50vw;
 }

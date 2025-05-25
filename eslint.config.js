@@ -1,6 +1,5 @@
-// .eslintrc.js
+
 import js from "@eslint/js";
-//import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 import tsEslint from "@typescript-eslint/eslint-plugin";
@@ -32,18 +31,16 @@ export default {
         react: {
           version: "detect",
           pragma: "React",
-          jsxRuntime: "automatic",    // ← New JSX transform
+          jsxRuntime: "automatic",    
         },
       },
       rules: {
-        // turn off “React must be in scope” errors
+
         "react/react-in-jsx-scope": "off",
 
-        // your existing React hook and TS rules
         ...reactHooks.configs.recommended.rules,
         ...tsEslint.configs.recommended.rules,
 
-        // optional: only warn on unused vars
         "no-unused-vars": "warn",
         "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }]
       },
