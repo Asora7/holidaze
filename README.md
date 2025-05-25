@@ -42,7 +42,6 @@ A live version of the application is deployed at:
 
 > https://holidaze-asora.netlify.app/
 
-Test the core user flows in Incognito mode to ensure all routes are accessible.
 
 ---
 
