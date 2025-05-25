@@ -60,7 +60,7 @@ Follow these steps to set up the project locally:
 1. **Clone the repository**  
    ```bash
    git clone https://github.com/Asora7/holidaze.git
-   cd holidaze-frontend
+   cd holidaze
 2. **Install dependencies**
    ```bash
    npm install
