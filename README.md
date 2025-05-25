@@ -1,54 +1,68 @@
-# React + TypeScript + Vite
+# Holidaze Front-End Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the source code for the Holidaze accommodation booking application front-end. The application is built with React, TypeScript, and Tailwind CSS, and interacts with the official Holidaze API.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Table of Contents
 
-## Expanding the ESLint configuration
+1. [Features](#features)  
+2. [Demo](#demo)  
+3. [Prerequisites](#prerequisites)  
+4. [Getting Started](#getting-started)  
+5. [Available Scripts](#available-scripts)  
+6. [Project Structure](#project-structure)  
+7. [Technologies Used](#technologies-used)  
+8. [API Documentation](#api-documentation)  
+9. [Testing and Validation](#testing-and-validation)  
+10. [Deployment](#deployment)  
+11. [Accessibility & Best Practices](#accessibility--best-practices)  
+12. [License](#license)  
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Features
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Venue Listing**: Browse and search accommodation venues.  
+- **Venue Detail View**: See detailed information and availability calendar for each venue.  
+- **User Authentication**: Register and log in as Customer or Venue Manager using a stud.noroff.no email.  
+- **Booking Management**:  
+  - Customers can create, view, and cancel their bookings.  
+  - Venue Managers can create, edit, and delete venues, and view bookings for their venues.  
+- **Profile Management**: Upload or update a profile avatar with a default placeholder until updated.  
+- **Responsive Design**: Fully responsive UI for desktop and mobile.  
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Demo
+
+A live version of the application is deployed at:
+
+> https://holidaze-asora.netlify.app/
+
+Test the core user flows in Incognito mode to ensure all routes are accessible.
+
+---
+
+## Prerequisites
+
+- **Node.js** (v16 or higher)  
+- **npm** (v8 or higher) or **Yarn**  
+- **Git**  
+
+---
+
+## Getting Started
+
+Follow these steps to set up the project locally:
+
+1. **Clone the repository**  
+   ```bash
+   git clone https://github.com/<your-username>/holidaze-frontend.git
+   cd holidaze-frontend
+2. **Install dependencies**
+   ```bash
+   npm install
+3. **Start the development servers**
+   ```bash
+   npm run dev
