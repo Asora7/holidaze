@@ -14,7 +14,7 @@ interface VenueCardProps {
 }
 
 export default function VenueCard({ venue }: VenueCardProps) {
-  const img = venue.media[0]?.url || "/placeholder.jpg";
+  const img = venue.media[0].url
   const alt = venue.media[0]?.alt || venue.name;
 
   return (
