@@ -29,11 +29,18 @@ const NavButton = styled.button`
   ${navItemStyles}
 `
 
-// Logo image: fixed 32px layout height, but visually enlarged
+// Container: fixes the layout height and allows overflow
+const LogoContainer = styled.div`
+  height: 48px;             /* controls navbar height */
+  overflow: visible;        /* lets the logo stick out */
+  display: flex;            /* align-items center if needed */
+  align-items: center;
+`
+
+// Logo itself: small container but scaled up
 const LogoImg = styled.img`
-  height: 32px;               /* layout height */
-  width: auto;
-  transform: scale(4.5);      /* visually 4.5× bigger (~144px tall) */
+  height: 48px;             /* sets the layout box inside the container */
+  transform: scale(3.5);      /* visually double size (~96px tall) */
   transform-origin: left center;
   display: block;
 `
@@ -50,9 +57,12 @@ export default function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg bg-white navbar-taller">
       <div className="container-fluid d-flex justify-content-between align-items-center">
-        {/* Brand: scaled SVG */}
+
+        {/* Brand */}
         <Link to="/" className="navbar-brand p-0">
-          <LogoImg src="/holidaze-logo.svg" alt="Holidaze logo" />
+          <LogoContainer>
+            <LogoImg src="/holidaze-logo.svg" alt="Holidaze logo" />
+          </LogoContainer>
         </Link>
 
         {/* Nav links */}
