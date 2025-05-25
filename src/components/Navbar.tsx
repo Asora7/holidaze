@@ -29,11 +29,11 @@ const NavButton = styled.button`
   ${navItemStyles}
 `
 
-// Logo image: fixed layout height but visually scaled
+// Logo image: fixed 32px layout height, but visually enlarged
 const LogoImg = styled.img`
-  height: 32px;               /* Layout stays 32px tall */
+  height: 32px;               /* layout height */
   width: auto;
-  transform: scale(4.5);      /* Visually 1.5× larger (≈48px) */
+  transform: scale(4.5);      /* visually 4.5× bigger (~144px tall) */
   transform-origin: left center;
   display: block;
 `
@@ -48,7 +48,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white border-bottom navbar-taller">
+    <nav className="navbar navbar-expand-lg bg-white navbar-taller">
       <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Brand: scaled SVG */}
         <Link to="/" className="navbar-brand p-0">
