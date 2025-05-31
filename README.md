@@ -23,6 +23,9 @@ This repository contains the source code for the Holidaze front-end application,
 
 ---
 
+## Update
+Update 1 June 2025: The Holidaze Kanban board is now public. If you attempted to view it earlier and got a “private” error, you can access it here: https://github.com/users/Asora7/projects/6/views/1
+
 ## Features
 
 - **Venue Listing**: Browse and search accommodation venues.  
