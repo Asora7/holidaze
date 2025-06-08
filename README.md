@@ -1,5 +1,12 @@
 # Holidaze Front-End Application
 
+## Demo
+
+A live version of the application is deployed at:
+
+> https://holidaze-asora.netlify.app/
+
+
 Holidaze is a modern accommodation booking platform featuring two distinct user experiences: customers and venue managers. Customers can browse and search venues, view availability calendars, and manage their bookings, while venue managers can register, update, and delete venue listings and track incoming reservations.
 
 This repository contains the source code for the Holidaze front-end application, built with React, TypeScript, and Bootstrap, integrating with the official Holidaze API.
@@ -36,14 +43,6 @@ Update 1 June 2025: The Holidaze Kanban board is now public. If you attempted to
   - Venue Managers can create, edit, and delete venues, and view bookings for their venues.  
 - **Profile Management**: Upload or update a profile avatar with a default placeholder until updated.  
 - **Responsive Design**: Fully responsive UI for desktop and mobile.  
-
----
-
-## Demo
-
-A live version of the application is deployed at:
-
-> https://holidaze-asora.netlify.app/
 
 
 ---
